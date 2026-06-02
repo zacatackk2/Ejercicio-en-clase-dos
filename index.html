@@ -3,47 +3,75 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>titulo de pestaña</title>
+    <title>Sistema de Recomendación Literaria</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <header>
-      <p class="etiqueta">cesar :)</p>
-      <h1>test</h1>
-      <p class="bajada">holahola</p>
+      <p class="etiqueta">Evidencia 2 - Analítica de Datos</p>
+      <h1>Sistema de Recomendación Literaria</h1>
+      <p class="bajada">Un análisis de preferencias culturales y demográficas para sugerir lecturas personalizadas superando sesgos algorítmicos.</p>
     </header>
 
     <main>
       <section class="panel-resumen" aria-label="Resumen de datos">
         <article>
-          <span id="total-registros">0</span>
-          <p>registros</p>
+          <span id="total-registros">32</span>
+          <p>Personas Encuestadas</p>
         </article>
         <article>
-          <span id="valor-total">0</span>
-          <p>valor total</p>
+          <span id="valor-total">30</span>
+          <p>Obras Evaluadas</p>
         </article>
         <article>
-          <span id="categoria-mayor">-</span>
-          <p>categoría mayor</p>
+          <span id="categoria-mayor">3</span>
+          <p>Métodos de Recomendación</p>
         </article>
+      </section>
+
+      <section class="contenedor-texto">
+        <p class="etiqueta">Contexto</p>
+        <h2>El sesgo en la literatura</h2>
+        <p>
+          En nuestra investigación previa (Evidencia 1), descubrimos una fuerte centralización de la literatura anglosajona comercial. Como se observa en nuestro análisis de redes, las obras de otras culturas quedan relegadas a la periferia.
+        </p>
+        <img src="Gephi_PNG_Literatura.png" alt="Grafo de centralidad en Gephi mostrando géneros literarios" style="max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
+      </section>
+
+      <section class="contenedor-texto">
+        <p class="etiqueta">Metodología</p>
+        <h2>Recolección de Datos Ética</h2>
+        <p>
+          Para construir nuestro recomendador, diseñamos una encuesta aplicada a 32 personas. Garantizamos el anonimato mediante un estricto <strong>Aviso de Privacidad</strong> y utilizamos variables demográficas inclusivas. Evaluamos 30 obras literarias que van desde <em>1984</em> hasta tendencias actuales como <em>The Silent Patient</em>.
+        </p>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <img src="image_48b8eb.png" alt="Captura de encuesta demográfica" style="width: 48%; border-radius: 8px;">
+          <img src="image_48b8cb.png" alt="Captura de escala de libros" style="width: 48%; border-radius: 8px;">
+        </div>
       </section>
 
       <section class="contenedor-viz">
         <div>
-          <p class="etiqueta">Visualización</p>
-          <h2>Valores por categoría</h2>
+          <p class="etiqueta">Análisis de Relaciones</p>
+          <h2>Demografía vs. Preferencias</h2>
           <p>
-            Cambia los datos en <code>datos.csv</code> para adaptar esta plantilla a tu investigación.
-            Cada fila debe tener una categoría, un valor y una nota.
+            ¿Cómo influye la edad, ocupación y género en los gustos literarios? Aquí presentamos los resultados de nuestro análisis exploratorio para detectar y mitigar estereotipos culturales.
           </p>
         </div>
-        <div id="grafica" class="grafica" aria-live="polite"></div>
+        <div id="grafica-relaciones" class="grafica" aria-live="polite">
+          [Espacio reservado para gráficas de Python/Observable]
+        </div>
       </section>
 
-      <section>
-        <p class="etiqueta">Lectura generada</p>
-        <p id="lectura" class="lectura">Cargando datos...</p>
+      <section class="contenedor-texto">
+        <p class="etiqueta">Resultados</p>
+        <h2>Los 3 Motores de Recomendación</h2>
+        <p id="lectura" class="lectura">
+          Hemos procesado las calificaciones de nuestros usuarios a través de tres algoritmos distintos: <br><br>
+          <strong>A. Promedio General:</strong> Las obras mejor valoradas por toda la comunidad.<br>
+          <strong>B. Género Favorito:</strong> Sugerencias basadas en el nicho declarado del usuario.<br>
+          <strong>C. Similitud de Gustos:</strong> Recomendaciones colaborativas (Usuarios similares a ti también leyeron...).
+        </p>
       </section>
     </main>
 
