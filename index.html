@@ -108,16 +108,20 @@
         <h3 class="font-playfair text-2xl font-bold text-graphite mb-2">Top 5 del grupo</h3>
         <p class="text-gray-500 text-sm mb-8">Ordenados por promedio bayesiano — equilibra calificación y número de votos recibidos.</p>
         <div id="top5-cards" class="grid grid-cols-1 sm:grid-cols-5 gap-5"></div>
+        <p class="text-xs text-gray-400 mt-4">* La calificación mostrada es el <strong>promedio bayesiano</strong> — pondera la calificación promedio por el número de votos recibidos, penalizando títulos con pocas reseñas y acercándolos al promedio global del grupo.</p>
     </div>
 
     <!-- Graficas -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
             <h3 class="font-playfair text-2xl font-semibold mb-6">Distribución Temática</h3>
-            <canvas id="barChart"></canvas>
+            <div style="height:380px;position:relative;">
+                <canvas id="barChart"></canvas>
+            </div>
         </div>
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center">
-            <h3 class="font-playfair text-2xl font-semibold mb-6 w-full text-left">Géneros Literarios</h3>
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios</h3>
+            <p class="text-xs text-gray-400 mb-4">Top 5 por votos: <strong class="text-graphite">Dystopian</strong> (94) · <strong class="text-graphite">Drama</strong> (54) · <strong class="text-graphite">Magical Realism</strong> (45) · <strong class="text-graphite">Mystery</strong> (44) · <strong class="text-graphite">Historical Drama</strong> (35)</p>
             <div class="w-full">
                 <canvas id="doughnutChart"></canvas>
             </div>
@@ -274,20 +278,20 @@
 
             <div class="bg-paper rounded-2xl p-10 border border-gray-100 flex flex-col sm:flex-row gap-8 items-start">
                 <div class="flex-1">
-                    <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 24</div>
-                    <h4 class="font-playfair text-2xl font-bold text-graphite mb-4">Estudiante, 39 años</h4>
+                    <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 15</div>
+                    <h4 class="font-playfair text-2xl font-bold text-graphite mb-4">Freelancer, 24 años</h4>
                     <ul class="text-sm text-gray-600 space-y-3">
-                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Género favorito: <strong>Misterio / Romance</strong></li>
-                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Calificó alto: <strong>The Hunger Games</strong> (5★) y <strong>Life of Pi</strong> (5★)</li>
-                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Tema predominante: <strong>Survival / Adventure</strong></li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Género favorito: <strong>Misterio / Novela Histórica / Clásicos</strong></li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Calificó alto: <strong>One Hundred Years of Solitude</strong> (5★) y <strong>1984</strong> (4★)</li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Tema predominante: <strong>Family / Surveillance</strong></li>
                     </ul>
                 </div>
                 <div class="hidden sm:block text-gray-300 pt-12"><i class="fa-solid fa-arrow-right-arrow-left text-3xl"></i></div>
                 <div class="flex-1 bg-white p-6 rounded-xl shadow-md text-center border-t-4 border-sage w-full">
-                    <img src="https://covers.openlibrary.org/b/isbn/9780385490818-M.jpg" alt="The Handmaid's Tale" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
+                    <img src="https://covers.openlibrary.org/b/isbn/9781501117015-M.jpg" alt="The House of the Spirits" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
                     <p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Recomendación Top</p>
-                    <h5 class="font-playfair font-bold text-xl">The Handmaid's Tale</h5>
-                    <p class="text-xs text-gray-400 mt-2">Usuarios con afinidad por distopías de supervivencia convergieron consistentemente en este título como siguiente lectura.</p>
+                    <h5 class="font-playfair font-bold text-xl">The House of the Spirits</h5>
+                    <p class="text-xs text-gray-400 mt-2">Usuarios que valoraron el realismo mágico clásico y narrativas históricas convergieron en este título como continuación natural.</p>
                 </div>
             </div>
         </div>
@@ -345,14 +349,16 @@
             </button>
 
             <!-- Resultado -->
-            <div id="resultado-rec" class="hidden mt-8 border-t border-gray-100 pt-8 flex flex-col sm:flex-row gap-6 items-center">
-                <img id="rec-portada" src="" alt="" class="w-24 rounded-lg shadow-md flex-shrink-0" onerror="this.style.display='none'">
-                <div>
-                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Tu recomendación</p>
-                    <h4 id="rec-titulo" class="font-playfair text-2xl font-bold text-graphite mb-1"></h4>
-                    <p id="rec-autor" class="text-gray-500 text-sm mb-3"></p>
-                    <p id="rec-razon" class="text-gray-600 text-sm leading-relaxed"></p>
-                    <button id="btn-reiniciar" class="mt-4 text-sage text-sm font-medium hover:underline">← Intentar de nuevo</button>
+            <div id="resultado-rec" class="hidden mt-8 border-t border-gray-100 pt-8">
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-4 text-center">Tu recomendación</p>
+                <div class="flex flex-col sm:flex-row gap-6 items-center">
+                    <img id="rec-portada" src="" alt="" class="w-32 rounded-lg shadow-lg flex-shrink-0 mx-auto sm:mx-0" onerror="this.style.display='none'">
+                    <div>
+                        <h4 id="rec-titulo" class="font-playfair text-2xl font-bold text-graphite mb-1"></h4>
+                        <p id="rec-autor" class="text-gray-500 text-sm mb-3"></p>
+                        <p id="rec-razon" class="text-gray-600 text-sm leading-relaxed"></p>
+                        <button id="btn-reiniciar" class="mt-4 text-sage text-sm font-medium hover:underline">← Intentar de nuevo</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -568,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { display:false } },
                 scales: {
                     y: { beginAtZero:true, grid:{ color:'#f3f4f6' } },
