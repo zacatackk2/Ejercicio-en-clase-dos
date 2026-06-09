@@ -112,20 +112,34 @@
     </div>
 
     <!-- Graficas -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="font-playfair text-2xl font-semibold mb-6">Distribución Temática</h3>
-            <div style="height:380px;position:relative;">
-                <canvas id="barChart"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+        <!-- Columna izquierda: dos barras apiladas -->
+        <div class="flex flex-col gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-playfair text-2xl font-semibold mb-6">Distribución Temática</h3>
+                <div style="height:300px;position:relative;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Favoritos de los Encuestados</h3>
+                <p class="text-gray-500 text-sm mb-6">Respuestas directas de la encuesta — cada persona podía elegir varios.</p>
+                <div style="height:260px;position:relative;">
+                    <canvas id="favGenresChart"></canvas>
+                </div>
             </div>
         </div>
+
+        <!-- Columna derecha: dona -->
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios</h3>
+            <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios del Catálogo</h3>
             <p class="text-xs text-gray-400 mb-4">Top 5 por votos: <strong class="text-graphite">Dystopian</strong> (94) · <strong class="text-graphite">Drama</strong> (54) · <strong class="text-graphite">Magical Realism</strong> (45) · <strong class="text-graphite">Mystery</strong> (44) · <strong class="text-graphite">Historical Drama</strong> (35)</p>
             <div class="w-full">
                 <canvas id="doughnutChart"></canvas>
             </div>
         </div>
+
     </div>
 </section>
 
@@ -352,7 +366,7 @@
             <div id="resultado-rec" class="hidden mt-8 border-t border-gray-100 pt-8">
                 <p class="text-xs text-gray-400 uppercase tracking-widest mb-4 text-center">Tu recomendación</p>
                 <div class="flex flex-col sm:flex-row gap-6 items-center">
-                    <img id="rec-portada" src="" alt="" class="w-32 rounded-lg shadow-lg flex-shrink-0 mx-auto sm:mx-0" onerror="this.style.display='none'">
+                    <img id="rec-portada" src="" alt="" class="w-32 rounded-lg shadow-lg flex-shrink-0 mx-auto sm:mx-0" style="min-height:12rem;background:#e5e7eb;">
                     <div>
                         <h4 id="rec-titulo" class="font-playfair text-2xl font-bold text-graphite mb-1"></h4>
                         <p id="rec-autor" class="text-gray-500 text-sm mb-3"></p>
@@ -599,6 +613,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 cutout: '60%'
             }
         });
+
+        // Géneros favoritos de los encuestados (datos directos de la encuesta)
+        const favGenres = [
+            { label: 'Misterio/Thriller', value: 19 },
+            { label: 'Romance',           value: 16 },
+            { label: 'Fantasía',          value: 12 },
+            { label: 'Ciencia Ficción',   value: 9  },
+            { label: 'Novela Histórica',  value: 9  },
+            { label: 'Ficción General',   value: 6  },
+            { label: 'Otro',              value: 6  },
+            { label: 'Biografía/Auto.',   value: 5  },
+            { label: 'Terror',            value: 4  },
+            { label: 'No Ficción',        value: 3  },
+            { label: 'Clásicos',          value: 2  },
+            { label: 'Poesía',            value: 2  },
+        ];
+        new Chart(document.getElementById('favGenresChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: favGenres.map(e => e.label),
+                datasets: [{
+                    label: 'Menciones',
+                    data: favGenres.map(e => e.value),
+                    backgroundColor: favGenres.map((_, i) =>
+                        i === 0 ? '#059669' : i === 1 ? '#34d399' : i === 2 ? '#6ee7b7' : '#9ca3af'
+                    ),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { stepSize: 4 } },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
     }
 
     // ── RECOMENDADOR ────────────────────────────────────────────
@@ -637,8 +690,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const mejor = scored.sort((a,b) => b.score - a.score)[0];
 
-        document.getElementById('rec-portada').src   = coverUrl(mejor.isbn);
-        document.getElementById('rec-portada').alt   = mejor.titulo;
+        const portadaEl = document.getElementById('rec-portada');
+        portadaEl.style.display = 'block';
+        portadaEl.style.background = '#e5e7eb';
+        portadaEl.alt = mejor.titulo;
+        portadaEl.onerror = function() {
+            this.style.background = '#e5e7eb';
+            this.removeAttribute('src');
+            this.style.minHeight = '12rem';
+        };
+        portadaEl.src = coverUrl(mejor.isbn);
         document.getElementById('rec-titulo').textContent = mejor.titulo;
         document.getElementById('rec-autor').textContent  = mejor.autor;
         document.getElementById('rec-razon').textContent  =
