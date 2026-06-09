@@ -1,8 +1,31 @@
-categoria,valor,nota
-Misterio/Thriller,19,El género más popular entre los encuestados
-Romance,16,Fuerte preferencia consistente en distintas edades
-Fantasía,12,Alta popularidad impulsada por el público joven
-Ciencia Ficción,9,Preferencia marcada en el público masculino
-Novela Histórica,9,Género intermedio de interés cultural
-Ficción General,6,Interés en novelas contemporáneas sin género específico
-Otros Géneros,22,Incluye Terror, Biografías, Poesía y Clásicos
+rank,titulo,autor,genero,votos,promedio,bayesian_avg,anio,tema,pais
+1,The Hunger Games,Suzanne Collins,Dystopian,25,2.88,2.498,2008,Survival,United States
+2,Harry Potter and the Philosopher's Stone,J.K. Rowling,Fantasy,27,2.778,2.453,1997,Friendship,United Kingdom
+3,The Great Gatsby,F. Scott Fitzgerald,Drama,27,2.63,2.363,1925,Wealth,United States
+4,One Hundred Years of Solitude,Gabriel García Márquez,Magical Realism,27,2.556,2.318,1967,Family,Colombia
+5,The Handmaid's Tale,Margaret Atwood,Dystopian,21,2.286,2.135,1985,Oppression,Canada
+6,1984,George Orwell,Dystopian,17,2.235,2.092,1949,Surveillance,United Kingdom
+7,The Book Thief,Markus Zusak,Historical Fiction,13,2.077,2.006,2005,Survival,Australia
+8,Never Let Me Go,Kazuo Ishiguro,Science Fiction,15,2.067,2.006,2005,Mortality,United Kingdom
+9,The Power of Habit,Charles Duhigg,Psychology,16,2.062,2.006,2012,Behavior,United States
+10,Becoming,Michelle Obama,Memoir,19,2.053,2.005,2018,Identity,United States
+11,A Thousand Splendid Suns,Khaled Hosseini,Historical Drama,20,2.0,1.979,2007,Resilience,Afghanistan
+12,Life of Pi,Yann Martel,Adventure,20,2.0,1.979,2001,Survival,Canada
+13,The Alchemist,Paulo Coelho,Fable,17,1.882,1.919,1988,Destiny,Brazil
+14,Norwegian Wood,Haruki Murakami,Romance,15,1.867,1.914,1987,Love,Japan
+15,Educated,Tara Westover,Memoir,14,1.857,1.911,2018,Education,United States
+16,"Thinking, Fast and Slow",Daniel Kahneman,Psychology,14,1.857,1.911,2011,Cognition,Israel
+17,The Kite Runner,Khaled Hosseini,Drama,12,1.833,1.905,2003,Guilt,Afghanistan
+18,The Da Vinci Code,Dan Brown,Thriller,20,1.85,1.899,2003,Religion,United States
+19,Little Fires Everywhere,Celeste Ng,Drama,15,1.8,1.883,2017,Identity,United States
+20,The Shadow of the Wind,Carlos Ruiz Zafón,Mystery,13,1.769,1.876,2001,Books,Spain
+21,The Silent Patient,Alex Michaelides,Psychological Thriller,16,1.75,1.857,2019,Obsession,Cyprus
+22,Beloved,Toni Morrison,Historical Drama,15,1.733,1.853,1987,Memory,United States
+23,The Fault in Our Stars,John Green,Romance,15,1.733,1.853,2012,Loss,United States
+24,To Kill a Mockingbird,Harper Lee,Legal Drama,18,1.722,1.837,1960,Justice,United States
+25,Where the Crawdads Sing,Delia Owens,Mystery,15,1.667,1.822,2018,Nature,United States
+26,The Road,Cormac McCarthy,Dystopian,12,1.583,1.804,2006,Survival,United States
+27,Brave New World,Aldous Huxley,Dystopian,19,1.632,1.787,1932,Control,United Kingdom
+28,Gone Girl,Gillian Flynn,Mystery,16,1.5,1.738,2012,Deception,United States
+29,The House of the Spirits,Isabel Allende,Magical Realism,18,1.5,1.725,1982,Family,Chile
+30,The Four Agreements,Don Miguel Ruiz,Self-Help,17,1.471,1.717,1997,Wisdom,Mexico

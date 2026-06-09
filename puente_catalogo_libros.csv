@@ -1,0 +1,31 @@
+﻿variable,titulo,artista,genero_obra
+libro_01,1984,George Orwell,Dystopian
+libro_02,To Kill a Mockingbird,Harper Lee,Legal Drama
+libro_03,The Great Gatsby,F. Scott Fitzgerald,Drama
+libro_04,One Hundred Years of Solitude,Gabriel García Márquez,Magical Realism
+libro_05,The Handmaid's Tale,Margaret Atwood,Dystopian
+libro_06,Harry Potter and the Philosopher's Stone,J.K. Rowling,Fantasy
+libro_07,The Alchemist,Paulo Coelho,Fable
+libro_08,The Kite Runner,Khaled Hosseini,Drama
+libro_09,Beloved,Toni Morrison,Historical Drama
+libro_10,The Hunger Games,Suzanne Collins,Dystopian
+libro_11,The Book Thief,Markus Zusak,Historical Fiction
+libro_12,Gone Girl,Gillian Flynn,Mystery
+libro_13,The Da Vinci Code,Dan Brown,Thriller
+libro_14,"Thinking, Fast and Slow",Daniel Kahneman,Psychology
+libro_15,Educated,Tara Westover,Memoir
+libro_16,The Road,Cormac McCarthy,Dystopian
+libro_17,Norwegian Wood,Haruki Murakami,Romance
+libro_18,The Shadow of the Wind,Carlos Ruiz Zafón,Mystery
+libro_19,Brave New World,Aldous Huxley,Dystopian
+libro_20,The Fault in Our Stars,John Green,Romance
+libro_21,A Thousand Splendid Suns,Khaled Hosseini,Historical Drama
+libro_22,The Silent Patient,Alex Michaelides,Psychological Thriller
+libro_23,Becoming,Michelle Obama,Memoir
+libro_24,The Power of Habit,Charles Duhigg,Psychology
+libro_25,Where the Crawdads Sing,Delia Owens,Mystery
+libro_26,Life of Pi,Yann Martel,Adventure
+libro_27,Never Let Me Go,Kazuo Ishiguro,Science Fiction
+libro_28,The House of the Spirits,Isabel Allende,Magical Realism
+libro_29,The Four Agreements,Don Miguel Ruiz,Self-Help
+libro_30,Little Fires Everywhere,Celeste Ng,Drama

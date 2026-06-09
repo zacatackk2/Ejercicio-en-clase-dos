@@ -1,80 +1,72 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistema de Recomendación Literaria</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <header>
-      <p class="etiqueta">Evidencia 2 - Analítica de Datos</p>
-      <h1>Sistema de Recomendación Literaria</h1>
-      <p class="bajada">Un análisis de preferencias culturales y demográficas para sugerir lecturas personalizadas superando sesgos algorítmicos.</p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recomendador Literario | Ciencia de Datos — Tec de Monterrey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-    <main>
-      <section class="panel-resumen" aria-label="Resumen de datos">
-        <article>
-          <span id="total-registros">32</span>
-          <p>Personas Encuestadas</p>
-        </article>
-        <article>
-          <span id="valor-total">30</span>
-          <p>Obras Evaluadas</p>
-        </article>
-        <article>
-          <span id="categoria-mayor">3</span>
-          <p>Métodos de Recomendación</p>
-        </article>
-      </section>
+  <header>
+    <p class="etiqueta">Ciencia de Datos — Tec de Monterrey · 2026</p>
+    <h1>¿Qué dice una encuesta de<br><em>30 libros</em>?</h1>
+    <p class="bajada">
+      Le presentamos una muestra de 30 películas del catálogo que arrojó que…
+      Encuestamos a 26 personas para probar el recomendador al público en general.
+      Aquí puedes ver sus preferencias y los títulos mejor calificados por el grupo.
+    </p>
+  </header>
 
-      <section class="contenedor-texto">
-        <p class="etiqueta">Contexto</p>
-        <h2>El sesgo en la literatura</h2>
+  <main>
+
+    <!-- ── PANEL DE RESUMEN ──────────────────────────────── -->
+    <div class="panel-resumen" role="list">
+      <article role="listitem">
+        <span id="total-registros">—</span>
+        <p>Encuestados</p>
+      </article>
+      <article role="listitem">
+        <span id="valor-total">528</span>
+        <p>Calificaciones registradas</p>
+      </article>
+      <article role="listitem">
+        <span id="categoria-mayor" style="font-size: clamp(1rem, 2.5vw, 1.6rem); padding-top: 0.4rem;">—</span>
+        <p>Libro mejor calificado</p>
+      </article>
+    </div>
+
+    <!-- ── VISUALIZACIÓN PRINCIPAL ──────────────────────── -->
+    <div class="contenedor-viz">
+
+      <div>
+        <p class="etiqueta">Ranking completo</p>
+        <h2>Los 30 títulos del catálogo</h2>
         <p>
-          En nuestra investigación previa (Evidencia 1), descubrimos una fuerte centralización de la literatura anglosajona comercial. Como se observa en nuestro análisis de redes, las obras de otras culturas quedan relegadas a la periferia.
+          Ordenados por <code>promedio bayesiano</code> — una métrica que equilibra la calificación promedio con la cantidad de votos recibidos, penalizando los títulos con pocas respuestas.
         </p>
-        <img src="Gephi_PNG_Literatura.png" alt="Grafo de centralidad en Gephi mostrando géneros literarios" style="max-width: 100%; height: auto; border-radius: 8px; margin: 20px 0;">
-      </section>
-
-      <section class="contenedor-texto">
-        <p class="etiqueta">Metodología</p>
-        <h2>Recolección de Datos Ética</h2>
-        <p>
-          Para construir nuestro recomendador, diseñamos una encuesta aplicada a 32 personas. Garantizamos el anonimato mediante un estricto <strong>Aviso de Privacidad</strong> y utilizamos variables demográficas inclusivas. Evaluamos 30 obras literarias que van desde <em>1984</em> hasta tendencias actuales como <em>The Silent Patient</em>.
+        <p style="margin-top: 1rem;">
+          Los <strong style="color: var(--acento);">5 primeros</strong> están resaltados en azul.
+          La escala va de 1 (no conocido o mal calificado) a 5 (excelente).
         </p>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <img src="image_48b8eb.png" alt="Captura de encuesta demográfica" style="width: 48%; border-radius: 8px;">
-          <img src="image_48b8cb.png" alt="Captura de escala de libros" style="width: 48%; border-radius: 8px;">
-        </div>
-      </section>
+      </div>
 
-      <section class="contenedor-viz">
-        <div>
-          <p class="etiqueta">Análisis de Relaciones</p>
-          <h2>Demografía vs. Preferencias</h2>
-          <p>
-            ¿Cómo influye la edad, ocupación y género en los gustos literarios? Aquí presentamos los resultados de nuestro análisis exploratorio para detectar y mitigar estereotipos culturales.
-          </p>
-        </div>
-        <div id="grafica-relaciones" class="grafica" aria-live="polite">
-          [Espacio reservado para gráficas de Python/Observable]
-        </div>
-      </section>
+      <div id="grafica" class="grafica" role="img" aria-label="Gráfica de barras con los 30 libros ordenados por calificación bayesiana">
+        <!-- se llena con script.js -->
+      </div>
 
-      <section class="contenedor-texto">
-        <p class="etiqueta">Resultados</p>
-        <h2>Los 3 Motores de Recomendación</h2>
-        <p id="lectura" class="lectura">
-          Hemos procesado las calificaciones de nuestros usuarios a través de tres algoritmos distintos: <br><br>
-          <strong>A. Promedio General:</strong> Las obras mejor valoradas por toda la comunidad.<br>
-          <strong>B. Género Favorito:</strong> Sugerencias basadas en el nicho declarado del usuario.<br>
-          <strong>C. Similitud de Gustos:</strong> Recomendaciones colaborativas (Usuarios similares a ti también leyeron...).
-        </p>
-      </section>
-    </main>
+    </div>
 
-    <script src="script.js"></script>
-  </body>
+    <!-- ── LECTURA AUTOMÁTICA ────────────────────────────── -->
+    <p id="lectura" class="lectura">
+      <!-- se llena con script.js -->
+    </p>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
 </html>
