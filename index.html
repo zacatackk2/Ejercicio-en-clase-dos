@@ -112,7 +112,7 @@
     </div>
 
     <!-- Graficas -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
         <!-- Columna izquierda: dos barras apiladas -->
         <div class="flex flex-col gap-8">
@@ -132,10 +132,10 @@
         </div>
 
         <!-- Columna derecha: dona -->
-        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
             <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios del Catálogo</h3>
             <p class="text-xs text-gray-400 mb-4">Top 5 por votos: <strong class="text-graphite">Dystopian</strong> (94) · <strong class="text-graphite">Drama</strong> (54) · <strong class="text-graphite">Magical Realism</strong> (45) · <strong class="text-graphite">Mystery</strong> (44) · <strong class="text-graphite">Historical Drama</strong> (35)</p>
-            <div class="w-full">
+            <div class="flex-1 flex items-center justify-center" style="min-height:540px;position:relative;">
                 <canvas id="doughnutChart"></canvas>
             </div>
         </div>
@@ -604,13 +604,19 @@ document.addEventListener("DOMContentLoaded", () => {
             type: 'doughnut',
             data: {
                 labels: generos.map(e=>e[0]),
-                datasets: [{ data: generos.map(e=>e[1]), backgroundColor: paleta, borderWidth:0, hoverOffset:4 }]
+                datasets: [{ data: generos.map(e=>e[1]), backgroundColor: paleta, borderWidth:0, hoverOffset:6 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { position:'bottom', labels:{ font:{ size:10 }, boxWidth:12 } } },
-                cutout: '60%'
+                maintainAspectRatio: false,
+                layout: { padding: { top: 10, bottom: 10 } },
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { font:{ size:11 }, boxWidth:14, padding:10 }
+                    }
+                },
+                cutout: '55%'
             }
         });
 
@@ -666,48 +672,74 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    let _recomendandoTimeout = null;
     document.getElementById('btn-recomendar').addEventListener('click', () => {
         if (!seleccion[1] && !seleccion[2] && !seleccion[3]) {
             alert('Elige al menos una opción para continuar.');
             return;
         }
 
-        // Score por coincidencia de género, tema y época
-        const scored = catalogo.map(libro => {
-            let score = 0;
-            if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
-            if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
-            if (seleccion[3]) {
-                const yr = libro.anio;
-                if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
-                if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
-                if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
-                if (seleccion[3] === 'cualquiera') score += 0.5;
-            }
-            // desempate por bayesian_avg
-            return { ...libro, score: score + libro.bayesian * 0.1 };
-        });
+        // Debounce: ignorar clicks repetidos dentro de 300ms
+        if (_recomendandoTimeout) return;
+        _recomendandoTimeout = setTimeout(() => { _recomendandoTimeout = null; }, 300);
 
-        const mejor = scored.sort((a,b) => b.score - a.score)[0];
+        const btn = document.getElementById('btn-recomendar');
 
+        // 1. Ocultar resultado anterior ANTES de recalcular (evita freeze visual)
+        const resultadoEl = document.getElementById('resultado-rec');
+        resultadoEl.classList.add('hidden');
+
+        // 2. Limpiar imagen completamente para evitar conflictos de onerror residual
         const portadaEl = document.getElementById('rec-portada');
-        portadaEl.style.display = 'block';
-        portadaEl.style.background = '#e5e7eb';
-        portadaEl.alt = mejor.titulo;
-        portadaEl.onerror = function() {
-            this.style.background = '#e5e7eb';
-            this.removeAttribute('src');
-            this.style.minHeight = '12rem';
-        };
-        portadaEl.src = coverUrl(mejor.isbn);
-        document.getElementById('rec-titulo').textContent = mejor.titulo;
-        document.getElementById('rec-autor').textContent  = mejor.autor;
-        document.getElementById('rec-razon').textContent  =
-            `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
-            `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
+        portadaEl.removeAttribute('src');
+        portadaEl.onerror = null;
 
-        document.getElementById('resultado-rec').classList.remove('hidden');
-        document.getElementById('resultado-rec').scrollIntoView({ behavior:'smooth', block:'nearest' });
+        // 3. Deshabilitar botón brevemente para evitar clicks dobles
+        btn.disabled = true;
+        btn.textContent = 'Buscando…';
+
+        // 4. Calcular en el siguiente frame para asegurar repaint limpio
+        requestAnimationFrame(() => {
+            // Score por coincidencia de género, tema y época
+            const scored = catalogo.map(libro => {
+                let score = 0;
+                if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
+                if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
+                if (seleccion[3]) {
+                    const yr = libro.anio;
+                    if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
+                    if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
+                    if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
+                    if (seleccion[3] === 'cualquiera') score += 0.5;
+                }
+                return { ...libro, score: score + libro.bayesian * 0.1 };
+            });
+
+            const mejor = scored.sort((a,b) => b.score - a.score)[0];
+
+            portadaEl.style.display = 'block';
+            portadaEl.style.background = '#e5e7eb';
+            portadaEl.alt = mejor.titulo;
+            portadaEl.onerror = function() {
+                this.style.background = '#e5e7eb';
+                this.removeAttribute('src');
+                this.style.minHeight = '12rem';
+                this.onerror = null; // evitar loops de error
+            };
+            portadaEl.src = coverUrl(mejor.isbn);
+            document.getElementById('rec-titulo').textContent = mejor.titulo;
+            document.getElementById('rec-autor').textContent  = mejor.autor;
+            document.getElementById('rec-razon').textContent  =
+                `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
+                `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
+
+            resultadoEl.classList.remove('hidden');
+            resultadoEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+            // Restaurar botón
+            btn.disabled = false;
+            btn.textContent = 'Recomiéndame un libro';
+        });
     });
 
     document.getElementById('btn-reiniciar').addEventListener('click', () => {
