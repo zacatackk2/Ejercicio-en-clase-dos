@@ -672,74 +672,75 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    let _recomendandoTimeout = null;
+    let _recomendando = false;
     document.getElementById('btn-recomendar').addEventListener('click', () => {
         if (!seleccion[1] && !seleccion[2] && !seleccion[3]) {
             alert('Elige al menos una opción para continuar.');
             return;
         }
-
-        // Debounce: ignorar clicks repetidos dentro de 300ms
-        if (_recomendandoTimeout) return;
-        _recomendandoTimeout = setTimeout(() => { _recomendandoTimeout = null; }, 300);
+        if (_recomendando) return;
+        _recomendando = true;
 
         const btn = document.getElementById('btn-recomendar');
-
-        // 1. Ocultar resultado anterior ANTES de recalcular (evita freeze visual)
         const resultadoEl = document.getElementById('resultado-rec');
+
+        // 1. Ocultar resultado y deshabilitar botón de inmediato
         resultadoEl.classList.add('hidden');
-
-        // 2. Limpiar imagen completamente para evitar conflictos de onerror residual
-        const portadaEl = document.getElementById('rec-portada');
-        portadaEl.removeAttribute('src');
-        portadaEl.onerror = null;
-
-        // 3. Deshabilitar botón brevemente para evitar clicks dobles
         btn.disabled = true;
         btn.textContent = 'Buscando…';
 
-        // 4. Calcular en el siguiente frame para asegurar repaint limpio
-        requestAnimationFrame(() => {
-            // Score por coincidencia de género, tema y época
-            const scored = catalogo.map(libro => {
-                let score = 0;
-                if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
-                if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
-                if (seleccion[3]) {
-                    const yr = libro.anio;
-                    if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
-                    if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
-                    if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
-                    if (seleccion[3] === 'cualquiera') score += 0.5;
-                }
-                return { ...libro, score: score + libro.bayesian * 0.1 };
-            });
-
-            const mejor = scored.sort((a,b) => b.score - a.score)[0];
-
-            portadaEl.style.display = 'block';
-            portadaEl.style.background = '#e5e7eb';
-            portadaEl.alt = mejor.titulo;
-            portadaEl.onerror = function() {
-                this.style.background = '#e5e7eb';
-                this.removeAttribute('src');
-                this.style.minHeight = '12rem';
-                this.onerror = null; // evitar loops de error
-            };
-            portadaEl.src = coverUrl(mejor.isbn);
-            document.getElementById('rec-titulo').textContent = mejor.titulo;
-            document.getElementById('rec-autor').textContent  = mejor.autor;
-            document.getElementById('rec-razon').textContent  =
-                `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
-                `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
-
-            resultadoEl.classList.remove('hidden');
-            resultadoEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
-
-            // Restaurar botón
-            btn.disabled = false;
-            btn.textContent = 'Recomiéndame un libro';
+        // 2. Calcular el mejor libro (síncrono)
+        const scored = catalogo.map(libro => {
+            let score = 0;
+            if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
+            if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
+            if (seleccion[3]) {
+                const yr = libro.anio;
+                if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
+                if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
+                if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
+                if (seleccion[3] === 'cualquiera') score += 0.5;
+            }
+            return { ...libro, score: score + libro.bayesian * 0.1 };
         });
+        const mejor = scored.sort((a,b) => b.score - a.score)[0];
+
+        // 3. Approach B: reemplazar el <img> por un clon limpio para cortar
+        //    cualquier carga o handler residual de la imagen anterior
+        const oldImg = document.getElementById('rec-portada');
+        const newImg = document.createElement('img');
+        newImg.id          = 'rec-portada';
+        newImg.alt         = mejor.titulo;
+        newImg.className   = oldImg.className;
+        newImg.style.cssText = 'min-height:12rem;background:#e5e7eb;display:block;';
+        oldImg.replaceWith(newImg);
+
+        // 4. Rellenar textos (no dependen de la imagen)
+        document.getElementById('rec-titulo').textContent = mejor.titulo;
+        document.getElementById('rec-autor').textContent  = mejor.autor;
+        document.getElementById('rec-razon').textContent  =
+            `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
+            `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
+
+        // 5. Mostrar resultado INMEDIATAMENTE, sin esperar la imagen
+        resultadoEl.classList.remove('hidden');
+        resultadoEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        btn.disabled = false;
+        btn.textContent = 'Recomiéndame un libro';
+        _recomendando = false;
+
+        // 6. Cargar la imagen en segundo plano con setTimeout como safety net:
+        //    si tarda más de 4 s la descartamos silenciosamente
+        const imgTimeout = setTimeout(() => {
+            newImg.removeAttribute('src');
+        }, 4000);
+
+        newImg.onload  = () => clearTimeout(imgTimeout);
+        newImg.onerror = () => {
+            clearTimeout(imgTimeout);
+            newImg.removeAttribute('src');
+        };
+        newImg.src = coverUrl(mejor.isbn);
     });
 
     document.getElementById('btn-reiniciar').addEventListener('click', () => {
