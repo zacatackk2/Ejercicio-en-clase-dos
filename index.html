@@ -39,23 +39,23 @@
         details > summary { list-style: none; cursor: pointer; }
         details > summary::-webkit-details-marker { display: none; }
 
-        /* modal */
+        /* ventana emergente con los 30 libros */
         #modal-libros { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:50; overflow-y:auto; padding:2rem 1rem; }
         #modal-libros.open { display:flex; align-items:flex-start; justify-content:center; }
         #modal-contenido { background:#fff; border-radius:1rem; max-width:900px; width:100%; padding:2rem; position:relative; margin:auto; }
 
-        /* recomendador */
+        /* botones de selección del recomendador */
         .opcion-btn { cursor:pointer; border:2px solid #e5e7eb; border-radius:9999px; padding:0.4rem 1rem; font-size:0.85rem; transition:all 0.2s; background:#fff; }
         .opcion-btn.selected { border-color:#059669; background:#D1FAE5; color:#059669; font-weight:600; }
         .opcion-btn:hover:not(.selected) { border-color:#9ca3af; }
 
-        /* portada fallback */
+        /* portada de libro — si no carga, muestra gris */
         .portada-img { width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:0.5rem; background:#e5e7eb; }
     </style>
 </head>
 <body class="font-inter antialiased selection:bg-sageLight selection:text-sage">
 
-<!-- ── HERO ─────────────────────────────────────────────────── -->
+<!-- PORTADA ────────────────────────────────────────────────────── -->
 <header class="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 pb-10 overflow-hidden">
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30">
         <div class="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] rounded-full bg-sageLight blur-3xl"></div>
@@ -77,14 +77,14 @@
     </div>
 </header>
 
-<!-- ── DASHBOARD ─────────────────────────────────────────────── -->
+<!-- RESULTADOS DE LA ENCUESTA ───────────────────────────────────── -->
 <section id="dashboard" class="py-20 px-6 max-w-7xl mx-auto">
     <div class="mb-12">
         <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">¿Qué nos dijeron los 32?</h2>
         <p class="text-gray-600 max-w-3xl">Estos son los resultados de la encuesta. Puedes ver cuántas personas participaron, qué géneros dominan y cuál fue el libro favorito del grupo.</p>
     </div>
 
-    <!-- KPIs -->
+    <!-- tres números grandes arriba -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
         <div class="glass-card p-10 rounded-2xl text-center shadow-sm hover:shadow-md transition">
             <i class="fa-solid fa-users text-3xl text-sage mb-4"></i>
@@ -103,7 +103,7 @@
         </div>
     </div>
 
-    <!-- Top 5 visual -->
+    <!-- top 5 con portadas -->
     <div class="mb-16">
         <h3 class="font-playfair text-2xl font-bold text-graphite mb-2">Los 5 libros más queridos del grupo</h3>
         <p class="text-gray-500 text-sm mb-8">Los que recibieron las mejores calificaciones entre los 32 encuestados.*</p>
@@ -111,17 +111,18 @@
         <p class="text-xs text-gray-400 mt-4">* La calificación mostrada es el <strong>promedio bayesiano</strong> | Pondera la calificación promedio por el número de votos recibidos, penalizando títulos con pocas reseñas y acercándolos al promedio global del grupo.</p>
     </div>
 
-    <!-- Graficas -->
+    <!-- gráficas: dos barras a la izquierda, dona a la derecha -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
-        <!-- Columna izquierda: dos barras apiladas -->
         <div class="flex flex-col gap-8">
+            <!-- temas más frecuentes en el catálogo -->
             <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <h3 class="font-playfair text-2xl font-semibold mb-6">Distribución Temática</h3>
                 <div style="height:300px;position:relative;">
                     <canvas id="barChart"></canvas>
                 </div>
             </div>
+            <!-- géneros que la gente declaró como favoritos en la encuesta -->
             <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Favoritos de los Encuestados</h3>
                 <p class="text-gray-500 text-sm mb-6">Respuestas directas de la encuesta - cada persona podía elegir varios.</p>
@@ -131,7 +132,7 @@
             </div>
         </div>
 
-        <!-- Columna derecha: dona -->
+        <!-- qué géneros tiene el catálogo de 30 libros -->
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
             <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios del Catálogo</h3>
             <p class="text-xs text-gray-400 mb-4">Top 5 por votos: <strong class="text-graphite">Dystopian</strong> (94) · <strong class="text-graphite">Drama</strong> (54) · <strong class="text-graphite">Magical Realism</strong> (45) · <strong class="text-graphite">Mystery</strong> (44) · <strong class="text-graphite">Historical Drama</strong> (35)</p>
@@ -143,7 +144,7 @@
     </div>
 </section>
 
-<!-- ── ARQUITECTURA ───────────────────────────────────────────── -->
+<!-- CÓMO FUNCIONA EL PROYECTO ───────────────────────────────────── -->
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center mb-16">
@@ -151,6 +152,7 @@
             <p class="text-gray-600 max-w-2xl mx-auto">El proyecto tiene tres partes: primero preguntamos, luego organizamos los datos, y por último el sistema aprende de las respuestas para hacer sugerencias.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <!-- línea decorativa que conecta los tres pasos -->
             <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 z-0"></div>
             <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">1</div>
@@ -171,7 +173,7 @@
     </div>
 </section>
 
-<!-- ── CORPUS ─────────────────────────────────────────────────── -->
+<!-- LOS LIBROS DE LA LISTA ──────────────────────────────────────── -->
 <section class="py-20 px-6 max-w-7xl mx-auto">
     <div class="mb-12">
         <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Los libros de la lista</h2>
@@ -245,7 +247,7 @@
             </div>
         </div>
 
-        <!-- 24 más — abre modal -->
+        <!-- botón que abre el modal con los 30 libros -->
         <div id="btn-ver-todos" class="bg-paper p-6 rounded-xl border border-dashed border-gray-300 shadow-sm flex items-center justify-center text-center hidden lg:flex flex-col gap-2 cursor-pointer hover:border-sage hover:bg-sageLight transition-all duration-200">
             <i class="fa-solid fa-plus text-gray-400 text-2xl"></i>
             <p class="text-gray-500 font-medium text-sm">24 títulos más<br>en la base de datos</p>
@@ -253,16 +255,17 @@
     </div>
 </section>
 
-<!-- ── MODAL 24 LIBROS ────────────────────────────────────────── -->
+<!-- VENTANA EMERGENTE CON LOS 30 LIBROS ────────────────────────── -->
 <div id="modal-libros" role="dialog" aria-modal="true" aria-label="Catálogo completo">
     <div id="modal-contenido">
         <button id="modal-cerrar" class="absolute top-4 right-5 text-gray-400 hover:text-graphite text-2xl">&times;</button>
         <h3 class="font-playfair text-2xl font-bold text-graphite mb-6">Catálogo completo - 30 títulos</h3>
+        <!-- las tarjetas se generan desde JavaScript -->
         <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
     </div>
 </div>
 
-<!-- ── CASOS DE RECOMENDACION ─────────────────────────────────── -->
+<!-- DOS PERSONAS REALES Y SUS RECOMENDACIONES ───────────────────── -->
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="mb-12">
@@ -271,6 +274,7 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
+            <!-- encuestado 18 -->
             <div class="bg-paper rounded-2xl p-10 border border-gray-100 flex flex-col sm:flex-row gap-8 items-start">
                 <div class="flex-1">
                     <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 18</div>
@@ -290,6 +294,7 @@
                 </div>
             </div>
 
+            <!-- encuestado 15 -->
             <div class="bg-paper rounded-2xl p-10 border border-gray-100 flex flex-col sm:flex-row gap-8 items-start">
                 <div class="flex-1">
                     <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 15</div>
@@ -312,7 +317,7 @@
     </div>
 </section>
 
-<!-- ── RECOMENDADOR INTERACTIVO ───────────────────────────────── -->
+<!-- RECOMENDADOR INTERACTIVO ────────────────────────────────────── -->
 <section class="py-24 bg-sage relative overflow-hidden" id="recomendador">
     <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 30px 30px;"></div>
     <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-white">
@@ -322,7 +327,7 @@
 
         <div class="bg-white text-graphite rounded-2xl p-8 md:p-10 text-left shadow-xl">
 
-            <!-- Pregunta 1 -->
+            <!-- pregunta 1: género -->
             <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué género te atrae más?</p>
             <div id="q1" class="flex flex-wrap gap-2 mb-8">
                 <button class="opcion-btn" data-q="1" data-v="Dystopian">Distopía</button>
@@ -336,7 +341,7 @@
                 <button class="opcion-btn" data-q="1" data-v="Adventure">Aventura</button>
             </div>
 
-            <!-- Pregunta 2 -->
+            <!-- pregunta 2: tema -->
             <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué tema te interesa explorar?</p>
             <div id="q2" class="flex flex-wrap gap-2 mb-8">
                 <button class="opcion-btn" data-q="2" data-v="Survival">Supervivencia</button>
@@ -349,7 +354,7 @@
                 <button class="opcion-btn" data-q="2" data-v="Resilience">Resiliencia</button>
             </div>
 
-            <!-- Pregunta 3 -->
+            <!-- pregunta 3: época -->
             <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué época prefieres?</p>
             <div id="q3" class="flex flex-wrap gap-2 mb-10">
                 <button class="opcion-btn" data-q="3" data-v="clasico">Clásico (antes de 1980)</button>
@@ -362,7 +367,7 @@
                 Recomiéndame un libro
             </button>
 
-            <!-- Resultado -->
+            <!-- resultado — se muestra después de presionar el botón -->
             <div id="resultado-rec" class="hidden mt-8 border-t border-gray-100 pt-8">
                 <p class="text-xs text-gray-400 uppercase tracking-widest mb-4 text-center">Tu recomendación</p>
                 <div class="flex flex-col sm:flex-row gap-6 items-center">
@@ -379,7 +384,7 @@
     </div>
 </section>
 
-<!-- ── NOTAS TECNICAS ─────────────────────────────────────────── -->
+<!-- LIMITACIONES Y CÓDIGO ───────────────────────────────────────── -->
 <section class="py-20 px-6 max-w-4xl mx-auto border-t border-gray-200">
     <div class="mb-8 text-center">
         <h2 class="text-sm font-bold text-gray-400 tracking-widest uppercase mb-2">Para los curiosos</h2>
@@ -425,7 +430,7 @@ distances, indices = kNN.kneighbors(libro_vec, return_distance=True)
     </details>
 </section>
 
-<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<!-- PIE DE PÁGINA ───────────────────────────────────────────────── -->
 <footer class="bg-graphite text-gray-400 py-12 px-6 text-sm border-t-4 border-sage mt-10">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
@@ -456,12 +461,12 @@ distances, indices = kNN.kneighbors(libro_vec, return_distance=True)
     </div>
 </footer>
 
-<!-- ── SCRIPT ─────────────────────────────────────────────────── -->
+<!-- JAVASCRIPT ──────────────────────────────────────────────────── -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ── DATOS ───────────────────────────────────────────────────
-    const catalogo = [
+    // lista completa de los 30 libros con sus datos
+    const libros = [
         { rank:1,  titulo:"The Hunger Games",                          autor:"Suzanne Collins",         genero:"Dystopian",             tema:"Survival",     anio:2008, isbn:"9780439023481",  bayesian:2.498 },
         { rank:2,  titulo:"Harry Potter and the Philosopher's Stone",  autor:"J.K. Rowling",            genero:"Fantasy",               tema:"Friendship",   anio:1997, isbn:"9780439708180",  bayesian:2.453 },
         { rank:3,  titulo:"The Great Gatsby",                          autor:"F. Scott Fitzgerald",     genero:"Drama",                 tema:"Wealth",       anio:1925, isbn:"9780743273565",  bayesian:2.363 },
@@ -494,117 +499,153 @@ document.addEventListener("DOMContentLoaded", () => {
         { rank:30, titulo:"The Four Agreements",                       autor:"Don Miguel Ruiz",         genero:"Self-Help",             tema:"Wisdom",       anio:1997, isbn:"9781878424310",  bayesian:1.717 },
     ];
 
-    function coverUrl(isbn) {
+    // arma la URL de portada usando el ISBN del libro
+    function portadaUrl(isbn) {
         return `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;
     }
 
-    // ── KPIs ────────────────────────────────────────────────────
+    // llenamos los tres números grandes de arriba
     document.getElementById('kpi-total').textContent = '32';
     document.getElementById('kpi-genre').textContent = 'Dystopian';
-    document.getElementById('kpi-tone').textContent = 'The Hunger Games';
+    document.getElementById('kpi-tone').textContent  = 'The Hunger Games';
 
-    // ── TOP 5 CARDS ─────────────────────────────────────────────
-    const top5Container = document.getElementById('top5-cards');
+    // construimos las tarjetas del top 5
+    const contenedorTop5 = document.getElementById('top5-cards');
     const medallas = ['🥇','🥈','🥉','4°','5°'];
-    catalogo.slice(0,5).forEach((libro, i) => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col items-center text-center';
-        card.innerHTML = `
+
+    libros.slice(0, 5).forEach((libro, i) => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col items-center text-center';
+        tarjeta.innerHTML = `
             <div class="text-2xl mb-2">${medallas[i]}</div>
-            <img src="${coverUrl(libro.isbn)}" alt="${libro.titulo}"
+            <img src="${portadaUrl(libro.isbn)}" alt="${libro.titulo}"
                  class="w-20 rounded shadow mb-3" onerror="this.style.display='none'">
             <p class="text-xs font-bold text-sage uppercase tracking-wider mb-1">${libro.genero}</p>
             <h4 class="font-playfair font-bold text-sm text-graphite leading-snug mb-1">${libro.titulo}</h4>
             <p class="text-gray-400 text-xs mb-2">${libro.autor}</p>
             <span class="bg-sageLight text-sage text-xs font-bold px-2 py-1 rounded-full">${libro.bayesian.toFixed(2)} ★</span>
         `;
-        top5Container.appendChild(card);
+        contenedorTop5.appendChild(tarjeta);
     });
 
-    // ── MODAL 24 LIBROS ─────────────────────────────────────────
-    const modalGrid = document.getElementById('modal-grid');
-    catalogo.forEach(libro => {
+    // llenamos el modal con los 30 libros
+    const gridModal = document.getElementById('modal-grid');
+
+    libros.forEach(libro => {
         const item = document.createElement('div');
         item.className = 'flex flex-col items-center text-center gap-1';
         item.innerHTML = `
-            <img src="${coverUrl(libro.isbn)}" alt="${libro.titulo}"
+            <img src="${portadaUrl(libro.isbn)}" alt="${libro.titulo}"
                  class="w-full rounded shadow" style="aspect-ratio:2/3;object-fit:cover" onerror="this.style.background='#e5e7eb'">
             <p class="text-xs font-semibold text-graphite leading-tight mt-1">${libro.titulo}</p>
             <p class="text-xs text-gray-400">${libro.autor}</p>
             <span class="text-xs text-sage font-bold">#${libro.rank}</span>
         `;
-        modalGrid.appendChild(item);
+        gridModal.appendChild(item);
     });
 
+    // abrir y cerrar el modal
     document.getElementById('btn-ver-todos').addEventListener('click', () => {
         document.getElementById('modal-libros').classList.add('open');
         document.body.style.overflow = 'hidden';
     });
+
     document.getElementById('modal-cerrar').addEventListener('click', cerrarModal);
+
     document.getElementById('modal-libros').addEventListener('click', (e) => {
         if (e.target === document.getElementById('modal-libros')) cerrarModal();
     });
+
     function cerrarModal() {
         document.getElementById('modal-libros').classList.remove('open');
         document.body.style.overflow = '';
     }
 
-    // ── GRAFICAS ────────────────────────────────────────────────
-    const votosGenero = {}, votosTema = {};
-    catalogo.forEach(l => {
-        // usamos bayesian como proxy de votos relativos para la dona
-        votosGenero[l.genero] = (votosGenero[l.genero] || 0) + 1;
-        votosTema[l.tema]     = (votosTema[l.tema]     || 0) + 1;
-    });
-
-    // intentar cargar datos.csv para votos reales
+    // intentamos cargar datos reales del CSV; si falla usamos los números que ya tenemos
     Papa.parse("datos.csv", {
-        download: true, header: true, skipEmptyLines: true,
-        complete: (res) => { if (res.data.length) renderCharts(res.data); else renderCharts(null); },
-        error: () => renderCharts(null)
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: (resultado) => {
+            if (resultado.data.length) dibujarGraficas(resultado.data);
+            else dibujarGraficas(null);
+        },
+        error: () => dibujarGraficas(null)
     });
 
-    function renderCharts(csvData) {
-        const gVotos = {}, tVotos = {};
-        if (csvData) {
-            csvData.forEach(r => {
-                const g = r.genero; const t = r.tema; const v = Number(r.votos)||1;
-                if(g) gVotos[g] = (gVotos[g]||0)+v;
-                if(t) tVotos[t] = (tVotos[t]||0)+v;
+    function dibujarGraficas(datosCsv) {
+
+        // contamos votos por género y por tema
+        const votosPorGenero = {};
+        const votosPorTema   = {};
+
+        if (datosCsv) {
+            datosCsv.forEach(fila => {
+                const g = fila.genero;
+                const t = fila.tema;
+                const v = Number(fila.votos) || 1;
+                if (g) votosPorGenero[g] = (votosPorGenero[g] || 0) + v;
+                if (t) votosPorTema[t]   = (votosPorTema[t]   || 0) + v;
             });
         } else {
-            // fallback: votos reales hardcodeados
-            Object.assign(gVotos, { Dystopian:94, Drama:54, "Magical Realism":45, Mystery:44, "Historical Drama":35, Memoir:33, Romance:30, Psychology:30, Fantasy:27, Adventure:20, Thriller:20, "Legal Drama":18, Fable:17, "Self-Help":17, "Psychological Thriller":16, "Science Fiction":15, "Historical Fiction":13 });
-            Object.assign(tVotos, { Survival:70, Family:45, Identity:34, Friendship:27, Wealth:27, Oppression:21, Religion:20, Resilience:20, Control:19, Justice:18 });
+            // números reales de la encuesta como respaldo
+            Object.assign(votosPorGenero, {
+                Dystopian:94, Drama:54, "Magical Realism":45, Mystery:44,
+                "Historical Drama":35, Memoir:33, Romance:30, Psychology:30,
+                Fantasy:27, Adventure:20, Thriller:20, "Legal Drama":18,
+                Fable:17, "Self-Help":17, "Psychological Thriller":16,
+                "Science Fiction":15, "Historical Fiction":13
+            });
+            Object.assign(votosPorTema, {
+                Survival:70, Family:45, Identity:34, Friendship:27,
+                Wealth:27, Oppression:21, Religion:20, Resilience:20,
+                Control:19, Justice:18
+            });
         }
 
-        // Barras — top 10 temas
-        const temas = Object.entries(tVotos).sort((a,b)=>b[1]-a[1]).slice(0,10);
+        // gráfica de barras — top 10 temas
+        const temas = Object.entries(votosPorTema).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
         new Chart(document.getElementById('barChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: temas.map(e=>e[0]),
-                datasets: [{ label:'Votos', data: temas.map(e=>e[1]), backgroundColor:'#059669', borderRadius:4 }]
+                labels: temas.map(e => e[0]),
+                datasets: [{
+                    label: 'Votos',
+                    data: temas.map(e => e[1]),
+                    backgroundColor: '#059669',
+                    borderRadius: 4
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display:false } },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero:true, grid:{ color:'#f3f4f6' } },
-                    x: { grid:{ display:false }, ticks:{ font:{ size:11 } } }
+                    y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
                 }
             }
         });
 
-        // Dona — géneros
-        const generos = Object.entries(gVotos).sort((a,b)=>b[1]-a[1]);
-        const paleta = ['#059669','#1F2937','#34d399','#9ca3af','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#ec4899','#6ee7b7','#a78bfa','#fbbf24','#60a5fa','#f87171','#fb7185','#a3e635','#38bdf8'];
+        // gráfica de dona — géneros del catálogo
+        const generos = Object.entries(votosPorGenero).sort((a, b) => b[1] - a[1]);
+        const colores = [
+            '#059669','#1F2937','#34d399','#9ca3af','#3b82f6','#8b5cf6',
+            '#f59e0b','#ef4444','#ec4899','#6ee7b7','#a78bfa','#fbbf24',
+            '#60a5fa','#f87171','#fb7185','#a3e635','#38bdf8'
+        ];
+
         new Chart(document.getElementById('doughnutChart').getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: generos.map(e=>e[0]),
-                datasets: [{ data: generos.map(e=>e[1]), backgroundColor: paleta, borderWidth:0, hoverOffset:6 }]
+                labels: generos.map(e => e[0]),
+                datasets: [{
+                    data: generos.map(e => e[1]),
+                    backgroundColor: colores,
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
             },
             options: {
                 responsive: true,
@@ -613,36 +654,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 plugins: {
                     legend: {
                         position: 'right',
-                        labels: { font:{ size:11 }, boxWidth:14, padding:10 }
+                        labels: { font: { size: 11 }, boxWidth: 14, padding: 10 }
                     }
                 },
                 cutout: '55%'
             }
         });
 
-        // Géneros favoritos de los encuestados (datos directos de la encuesta)
-        const favGenres = [
-            { label: 'Misterio/Thriller', value: 19 },
-            { label: 'Romance',           value: 16 },
-            { label: 'Fantasía',          value: 12 },
-            { label: 'Ciencia Ficción',   value: 9  },
-            { label: 'Novela Histórica',  value: 9  },
-            { label: 'Ficción General',   value: 6  },
-            { label: 'Otro',              value: 6  },
-            { label: 'Biografía/Auto.',   value: 5  },
-            { label: 'Terror',            value: 4  },
-            { label: 'No Ficción',        value: 3  },
-            { label: 'Clásicos',          value: 2  },
-            { label: 'Poesía',            value: 2  },
+        // gráfica de barras — géneros favoritos que declararon los encuestados
+        const generosFavoritos = [
+            { etiqueta: 'Misterio/Thriller', menciones: 19 },
+            { etiqueta: 'Romance',           menciones: 16 },
+            { etiqueta: 'Fantasía',          menciones: 12 },
+            { etiqueta: 'Ciencia Ficción',   menciones: 9  },
+            { etiqueta: 'Novela Histórica',  menciones: 9  },
+            { etiqueta: 'Ficción General',   menciones: 6  },
+            { etiqueta: 'Otro',              menciones: 6  },
+            { etiqueta: 'Biografía/Auto.',   menciones: 5  },
+            { etiqueta: 'Terror',            menciones: 4  },
+            { etiqueta: 'No Ficción',        menciones: 3  },
+            { etiqueta: 'Clásicos',          menciones: 2  },
+            { etiqueta: 'Poesía',            menciones: 2  },
         ];
+
         new Chart(document.getElementById('favGenresChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: favGenres.map(e => e.label),
+                labels: generosFavoritos.map(e => e.etiqueta),
                 datasets: [{
                     label: 'Menciones',
-                    data: favGenres.map(e => e.value),
-                    backgroundColor: favGenres.map((_, i) =>
+                    data: generosFavoritos.map(e => e.menciones),
+                    // los tres primeros en verde degradado, el resto en gris
+                    backgroundColor: generosFavoritos.map((_, i) =>
                         i === 0 ? '#059669' : i === 1 ? '#34d399' : i === 2 ? '#6ee7b7' : '#9ca3af'
                     ),
                     borderRadius: 4
@@ -660,91 +703,90 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ── RECOMENDADOR ────────────────────────────────────────────
-    const seleccion = { 1: null, 2: null, 3: null };
+    // recomendador interactivo
+    const respuestas = { 1: null, 2: null, 3: null };
 
-    document.querySelectorAll('.opcion-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const q = btn.dataset.q;
-            document.querySelectorAll(`.opcion-btn[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            seleccion[q] = btn.dataset.v;
+    // guardar la opción que el usuario seleccionó en cada pregunta
+    document.querySelectorAll('.opcion-btn').forEach(boton => {
+        boton.addEventListener('click', () => {
+            const pregunta = boton.dataset.q;
+            document.querySelectorAll(`.opcion-btn[data-q="${pregunta}"]`).forEach(b => b.classList.remove('selected'));
+            boton.classList.add('selected');
+            respuestas[pregunta] = boton.dataset.v;
         });
     });
 
-    let _recomendando = false;
+    let calculando = false;
+
     document.getElementById('btn-recomendar').addEventListener('click', () => {
-        if (!seleccion[1] && !seleccion[2] && !seleccion[3]) {
+        if (!respuestas[1] && !respuestas[2] && !respuestas[3]) {
             alert('Elige al menos una opción para continuar.');
             return;
         }
-        if (_recomendando) return;
-        _recomendando = true;
+        if (calculando) return;
+        calculando = true;
 
-        const btn = document.getElementById('btn-recomendar');
-        const resultadoEl = document.getElementById('resultado-rec');
+        const botonRecomendar = document.getElementById('btn-recomendar');
+        const panelResultado  = document.getElementById('resultado-rec');
 
-        // 1. Ocultar resultado y deshabilitar botón de inmediato
-        resultadoEl.classList.add('hidden');
-        btn.disabled = true;
-        btn.textContent = 'Buscando…';
+        // ocultamos el resultado anterior mientras calculamos
+        panelResultado.classList.add('hidden');
+        botonRecomendar.disabled    = true;
+        botonRecomendar.textContent = 'Buscando…';
 
-        // 2. Calcular el mejor libro (síncrono)
-        const scored = catalogo.map(libro => {
-            let score = 0;
-            if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
-            if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
-            if (seleccion[3]) {
-                const yr = libro.anio;
-                if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
-                if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
-                if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
-                if (seleccion[3] === 'cualquiera') score += 0.5;
+        // puntuamos cada libro según lo que eligió el usuario
+        const puntuados = libros.map(libro => {
+            let puntos = 0;
+
+            if (respuestas[1] && libro.genero === respuestas[1]) puntos += 3; // género vale más
+            if (respuestas[2] && libro.tema   === respuestas[2]) puntos += 2; // tema vale segundo
+            if (respuestas[3]) {
+                const anio = libro.anio;
+                if (respuestas[3] === 'clasico'    && anio < 1980)               puntos += 1;
+                if (respuestas[3] === 'moderno'    && anio >= 1980 && anio < 2010) puntos += 1;
+                if (respuestas[3] === 'reciente'   && anio >= 2010)              puntos += 1;
+                if (respuestas[3] === 'cualquiera')                              puntos += 0.5;
             }
-            return { ...libro, score: score + libro.bayesian * 0.1 };
+
+            // desempate: el mejor calificado por el grupo gana
+            return { ...libro, puntos: puntos + libro.bayesian * 0.1 };
         });
-        const mejor = scored.sort((a,b) => b.score - a.score)[0];
 
-        // 3. Approach B: reemplazar el <img> por un clon limpio para cortar
-        //    cualquier carga o handler residual de la imagen anterior
-        const oldImg = document.getElementById('rec-portada');
-        const newImg = document.createElement('img');
-        newImg.id          = 'rec-portada';
-        newImg.alt         = mejor.titulo;
-        newImg.className   = oldImg.className;
-        newImg.style.cssText = 'min-height:12rem;background:#e5e7eb;display:block;';
-        oldImg.replaceWith(newImg);
+        const ganador = puntuados.sort((a, b) => b.puntos - a.puntos)[0];
 
-        // 4. Rellenar textos (no dependen de la imagen)
-        document.getElementById('rec-titulo').textContent = mejor.titulo;
-        document.getElementById('rec-autor').textContent  = mejor.autor;
+        // reemplazamos la imagen anterior por una nueva para evitar que quede la portada vieja
+        const imgAnterior = document.getElementById('rec-portada');
+        const imgNueva    = document.createElement('img');
+        imgNueva.id        = 'rec-portada';
+        imgNueva.alt       = ganador.titulo;
+        imgNueva.className = imgAnterior.className;
+        imgNueva.style.cssText = 'min-height:12rem;background:#e5e7eb;display:block;';
+        imgAnterior.replaceWith(imgNueva);
+
+        // llenamos título, autor y explicación
+        document.getElementById('rec-titulo').textContent = ganador.titulo;
+        document.getElementById('rec-autor').textContent  = ganador.autor;
         document.getElementById('rec-razon').textContent  =
-            `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
-            `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
+            `Género: ${ganador.genero} · Tema: ${ganador.tema} · ${ganador.anio}. ` +
+            `Calificación bayesiana del grupo: ${ganador.bayesian.toFixed(2)}/5.`;
 
-        // 5. Mostrar resultado INMEDIATAMENTE, sin esperar la imagen
-        resultadoEl.classList.remove('hidden');
-        resultadoEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
-        btn.disabled = false;
-        btn.textContent = 'Recomiéndame un libro';
-        _recomendando = false;
+        // mostramos el resultado de inmediato, sin esperar que cargue la portada
+        panelResultado.classList.remove('hidden');
+        panelResultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        botonRecomendar.disabled    = false;
+        botonRecomendar.textContent = 'Recomiéndame un libro';
+        calculando = false;
 
-        // 6. Cargar la imagen en segundo plano con setTimeout como safety net:
-        //    si tarda más de 4 s la descartamos silenciosamente
-        const imgTimeout = setTimeout(() => {
-            newImg.removeAttribute('src');
-        }, 4000);
-
-        newImg.onload  = () => clearTimeout(imgTimeout);
-        newImg.onerror = () => {
-            clearTimeout(imgTimeout);
-            newImg.removeAttribute('src');
-        };
-        newImg.src = coverUrl(mejor.isbn);
+        // cargamos la portada en segundo plano — si tarda más de 4 segundos la descartamos
+        const timerPortada = setTimeout(() => imgNueva.removeAttribute('src'), 4000);
+        imgNueva.onload  = () => clearTimeout(timerPortada);
+        imgNueva.onerror = () => { clearTimeout(timerPortada); imgNueva.removeAttribute('src'); };
+        imgNueva.src = portadaUrl(ganador.isbn);
     });
 
+    // limpiar todo y dejar el formulario en blanco
     document.getElementById('btn-reiniciar').addEventListener('click', () => {
-        seleccion[1] = seleccion[2] = seleccion[3] = null;
+        respuestas[1] = respuestas[2] = respuestas[3] = null;
         document.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
         document.getElementById('resultado-rec').classList.add('hidden');
     });
