@@ -67,7 +67,7 @@
             La Arquitectura Oculta <br><span class="italic font-light">del Gusto Literario</span>
         </h1>
         <p class="text-lg md:text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
-            Le presentamos una muestra de 30 libros del catálogo. Encuestamos a 32 personas para probar el recomendador al público en general. Aquí puedes ver sus preferencias y los títulos mejor calificados por el grupo.
+            Encuestamos a 32 personas sobre 30 libros. Aquí puedes ver qué leyeron, qué les gustó más, y al final te decimos qué libro podrías leer tú según tus gustos.
         </p>
         <div class="pt-8">
             <a href="#dashboard" class="inline-flex items-center gap-2 bg-graphite text-paper px-8 py-4 rounded-full font-medium hover:bg-sage transition-all duration-300 transform hover:-translate-y-1 shadow-lg">
@@ -80,8 +80,8 @@
 <!-- ── DASHBOARD ─────────────────────────────────────────────── -->
 <section id="dashboard" class="py-20 px-6 max-w-7xl mx-auto">
     <div class="mb-12">
-        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Panorama Lector en Tiempo Real</h2>
-        <p class="text-gray-600 max-w-3xl">Las siguientes visualizaciones representan una muestra viva de lectores. Los datos se procesan dinámicamente para revelar las inclinaciones literarias dominantes dentro del grupo de estudio.</p>
+        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">¿Qué nos dijeron los 32?</h2>
+        <p class="text-gray-600 max-w-3xl">Estos son los resultados de la encuesta. Puedes ver cuántas personas participaron, qué géneros dominan y cuál fue el libro favorito del grupo.</p>
     </div>
 
     <!-- KPIs -->
@@ -105,8 +105,8 @@
 
     <!-- Top 5 visual -->
     <div class="mb-16">
-        <h3 class="font-playfair text-2xl font-bold text-graphite mb-2">Top 5 del grupo</h3>
-        <p class="text-gray-500 text-sm mb-8">Ordenados por promedio bayesiano | Equilibra calificación y número de votos recibidos.</p>
+        <h3 class="font-playfair text-2xl font-bold text-graphite mb-2">Los 5 libros más queridos del grupo</h3>
+        <p class="text-gray-500 text-sm mb-8">Los que recibieron las mejores calificaciones entre los 32 encuestados.*</p>
         <div id="top5-cards" class="grid grid-cols-1 sm:grid-cols-5 gap-5"></div>
         <p class="text-xs text-gray-400 mt-4">* La calificación mostrada es el <strong>promedio bayesiano</strong> | Pondera la calificación promedio por el número de votos recibidos, penalizando títulos con pocas reseñas y acercándolos al promedio global del grupo.</p>
     </div>
@@ -147,25 +147,25 @@
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center mb-16">
-            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Arquitectura del Proyecto</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">El estudio plantea el objetivo central de modelar y comprender las estructuras del gusto literario mediante el cruce de variables demográficas y un algoritmo de similitud item-item.</p>
+            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">¿Cómo funciona?</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">El proyecto tiene tres partes: primero preguntamos, luego organizamos los datos, y por último el sistema aprende de las respuestas para hacer sugerencias.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 z-0"></div>
             <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">1</div>
-                <h3 class="font-playfair text-xl font-bold mb-3">Diseño de la Encuesta</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Se recolectaron calificaciones de 32 personas sobre 30 libros del catálogo, junto con variables demográficas: <strong>género</strong>, <strong>edad</strong>, <strong>ocupación</strong> y <strong>género literario favorito</strong>. Las calificaciones van de 1 a 5; el valor 0 indica que el libro no fue leído.</p>
+                <h3 class="font-playfair text-xl font-bold mb-3">La Encuesta</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Le pedimos a 32 personas que calificaran del 1 al 5 los libros que habían leído de nuestra lista de 30. Si no lo habían leído, simplemente lo dejaban en 0. También les preguntamos su edad, ocupación y qué géneros les gustan.</p>
             </div>
             <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">2</div>
-                <h3 class="font-playfair text-xl font-bold mb-3">Construcción del Catálogo</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Se curó una base de datos con 30 obras de literatura universal. Cada título fue etiquetado con género, tema central, país de origen y año de publicación, generando una matriz rectangular apta para el análisis computacional.</p>
+                <h3 class="font-playfair text-xl font-bold mb-3">La Lista de Libros</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Elegimos 30 libros conocidos de distintos géneros y épocas. A cada uno le anotamos su género, tema principal, país de origen y año de publicación para poder comparar mejor las preferencias del grupo.</p>
             </div>
             <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">3</div>
-                <h3 class="font-playfair text-xl font-bold mb-3">Modelado del Algoritmo</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Se construyó un recomendador item-item en Python usando <strong>similitud coseno</strong> entre vectores de calificación. El sistema identifica libros con patrones de lectura similares y genera un Top 5 personalizado para cada encuestado.</p>
+                <h3 class="font-playfair text-xl font-bold mb-3">El Recomendador</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Con las calificaciones en mano, el sistema busca qué libros fueron valorados de forma parecida por las mismas personas. Si tú y otra persona calificaron igual varios libros, probablemente también te guste lo que a esa persona le encantó.</p>
             </div>
         </div>
     </div>
@@ -174,8 +174,8 @@
 <!-- ── CORPUS ─────────────────────────────────────────────────── -->
 <section class="py-20 px-6 max-w-7xl mx-auto">
     <div class="mb-12">
-        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">El Corpus Literario</h2>
-        <p class="text-gray-600 max-w-2xl">Una muestra representativa del dataset principal, compuesto por 30 títulos etiquetados según sus atributos narrativos y temáticos. Se muestran los 6 mejor calificados por el grupo.</p>
+        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Los libros de la lista</h2>
+        <p class="text-gray-600 max-w-2xl">Estos son los 6 mejor calificados de los 30 que usamos en la encuesta. Abajo puedes ver todos.</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -266,8 +266,8 @@
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-6">
         <div class="mb-12">
-            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Casos de Recomendación Real</h2>
-            <p class="text-gray-600 max-w-2xl">El motor item-item identifica libros con patrones de calificación similares entre los encuestados. Aquí dos perfiles reales y las recomendaciones que el sistema les generó.</p>
+            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Ejemplos reales del sistema</h2>
+            <p class="text-gray-600 max-w-2xl">Dos personas reales de nuestra encuesta, y el libro que el sistema les recomendó basándose en lo que calificaron alto.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
@@ -286,7 +286,7 @@
                     <img src="https://covers.openlibrary.org/b/isbn/9780375842207-M.jpg" alt="The Book Thief" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
                     <p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Recomendación Top</p>
                     <h5 class="font-playfair font-bold text-xl">The Book Thief</h5>
-                    <p class="text-xs text-gray-400 mt-2">Comparte patrones de calificación con usuarios que también amaron Harry Potter y narrativas de resiliencia histórica.</p>
+                    <p class="text-xs text-gray-400 mt-2">Otras personas con gustos similares también calificaron alto este libro, así que el sistema lo sugirió como siguiente lectura.</p>
                 </div>
             </div>
 
@@ -305,7 +305,7 @@
                     <img src="https://covers.openlibrary.org/b/isbn/9781501117015-M.jpg" alt="The House of the Spirits" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
                     <p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Recomendación Top</p>
                     <h5 class="font-playfair font-bold text-xl">The House of the Spirits</h5>
-                    <p class="text-xs text-gray-400 mt-2">Usuarios que valoraron el realismo mágico clásico y narrativas históricas convergieron en este título como continuación natural.</p>
+                    <p class="text-xs text-gray-400 mt-2">Quienes calificaron alto los mismos libros que esta persona también disfrutaron mucho este título.</p>
                 </div>
             </div>
         </div>
@@ -318,7 +318,7 @@
     <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-white">
         <i class="fa-solid fa-book-journal-whills text-5xl mb-6 opacity-80"></i>
         <h2 class="font-playfair text-4xl md:text-5xl font-bold mb-4">¿Cuál es tu próxima lectura?</h2>
-        <p class="text-lg font-light opacity-90 mb-10 max-w-xl mx-auto">Responde tres preguntas y el recomendador cruza tus preferencias con los patrones del grupo para sugerirte un libro del catálogo.</p>
+        <p class="text-lg font-light opacity-90 mb-10 max-w-xl mx-auto">Elige lo que más te gusta y te decimos qué libro de nuestra lista podría ser el tuyo.</p>
 
         <div class="bg-white text-graphite rounded-2xl p-8 md:p-10 text-left shadow-xl">
 
@@ -382,26 +382,26 @@
 <!-- ── NOTAS TECNICAS ─────────────────────────────────────────── -->
 <section class="py-20 px-6 max-w-4xl mx-auto border-t border-gray-200">
     <div class="mb-8 text-center">
-        <h2 class="text-sm font-bold text-gray-400 tracking-widest uppercase mb-2">Auditoría del Proyecto</h2>
-        <h3 class="font-playfair text-3xl font-bold text-graphite">Notas Técnicas y Límites del Sistema</h3>
+        <h2 class="text-sm font-bold text-gray-400 tracking-widest uppercase mb-2">Para los curiosos</h2>
+        <h3 class="font-playfair text-3xl font-bold text-graphite">Qué limitaciones tiene el sistema</h3>
     </div>
     <details class="bg-white rounded-xl border border-gray-200 shadow-sm mb-4 group cursor-pointer overflow-hidden">
         <summary class="p-6 font-semibold flex justify-between items-center text-graphite hover:bg-gray-50 transition">
-            <span><i class="fa-solid fa-scale-balanced text-sage mr-3"></i> Límites y Sesgos Detectados</span>
+            <span><i class="fa-solid fa-scale-balanced text-sage mr-3"></i> Lo que el sistema no puede hacer bien</span>
             <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
         </summary>
         <div class="p-6 pt-0 text-sm text-gray-600 border-t border-gray-100 bg-gray-50 leading-relaxed">
-            <p class="mb-3">La sistematización del gusto literario revela retos inherentes en los sistemas de recomendación:</p>
+            <p class="mb-3">Todo sistema de recomendación tiene límites. Estos son los más importantes que encontramos:</p>
             <ul class="list-disc pl-5 space-y-2">
-                <li><strong>Sparsity de la matriz:</strong> Con 32 usuarios y 30 libros, muchos encuestados no leyeron la mayoría del catálogo, lo que genera vectores muy dispersos y reduce la precisión de la similitud coseno.</li>
-                <li><strong>Sesgo de selección:</strong> El catálogo de 30 libros presenta una predominancia del canon occidental anglófono, limitando la representatividad de otras tradiciones literarias.</li>
-                <li><strong>Muestra reducida:</strong> Con 32 encuestados, los patrones colectivos son sensibles a valores extremos. Un solo usuario con calificaciones atípicas puede desplazar las recomendaciones de varios vecinos.</li>
+                <li><strong>Pocos datos:</strong> La mayoría de los 32 encuestados no habían leído todos los libros, así que hay muchos huecos. Con tan poca información, las recomendaciones pueden ser menos precisas.</li>
+                <li><strong>Lista sesgada:</strong> Los 30 libros son principalmente clásicos y bestsellers en inglés. Falta representación de otras culturas y tradiciones literarias.</li>
+                <li><strong>Muestra pequeña:</strong> Con solo 32 personas, una sola opinión muy distinta al resto puede cambiar bastante los resultados del sistema.</li>
             </ul>
         </div>
     </details>
     <details class="bg-white rounded-xl border border-gray-200 shadow-sm group cursor-pointer overflow-hidden">
         <summary class="p-6 font-semibold flex justify-between items-center text-graphite hover:bg-gray-50 transition">
-            <span><i class="fa-solid fa-code text-sage mr-3"></i> Núcleo Algorítmico (Fragmento)</span>
+            <span><i class="fa-solid fa-code text-sage mr-3"></i> El código detrás del recomendador</span>
             <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
         </summary>
         <div class="p-0 border-t border-gray-100 bg-gray-900 overflow-x-auto text-xs sm:text-sm">
