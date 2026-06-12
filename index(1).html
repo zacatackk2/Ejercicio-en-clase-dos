@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Cultural y Literatura | Ciencia de Datos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#F9F9FB',
+                        graphite: '#1F2937',
+                        sage: '#059669',
+                        sageLight: '#D1FAE5'
+                    },
+                    fontFamily: {
+                        playfair: ['"Playfair Display"', 'serif'],
+                        inter: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { background-color: #F9F9FB; color: #1F2937; }
+        .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F9F9FB; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        details > summary { list-style: none; cursor: pointer; }
+        details > summary::-webkit-details-marker { display: none; }
+
+        /* modal */
+        #modal-libros { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:50; overflow-y:auto; padding:2rem 1rem; }
+        #modal-libros.open { display:flex; align-items:flex-start; justify-content:center; }
+        #modal-contenido { background:#fff; border-radius:1rem; max-width:900px; width:100%; padding:2rem; position:relative; margin:auto; }
+
+        /* recomendador */
+        .opcion-btn { cursor:pointer; border:2px solid #e5e7eb; border-radius:9999px; padding:0.4rem 1rem; font-size:0.85rem; transition:all 0.2s; background:#fff; }
+        .opcion-btn.selected { border-color:#059669; background:#D1FAE5; color:#059669; font-weight:600; }
+        .opcion-btn:hover:not(.selected) { border-color:#9ca3af; }
+
+        /* portada fallback */
+        .portada-img { width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:0.5rem; background:#e5e7eb; }
+    </style>
+</head>
+<body class="font-inter antialiased selection:bg-sageLight selection:text-sage">
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<header class="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 pb-10 overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30">
+        <div class="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] rounded-full bg-sageLight blur-3xl"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[30rem] h-[30rem] rounded-full bg-blue-50 blur-3xl"></div>
+    </div>
+    <div class="max-w-4xl mx-auto space-y-8">
+        <p class="text-sm tracking-widest uppercase font-semibold text-sage mb-4">Investigación y Modelado</p>
+        <h1 class="font-playfair text-5xl md:text-7xl font-bold leading-tight text-graphite">
+            La Arquitectura Oculta <br><span class="italic font-light">del Gusto Literario</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-600 font-light max-w-2xl mx-auto leading-relaxed">
+            Encuestamos a 32 personas sobre 30 libros. Aquí puedes ver qué leyeron, qué les gustó más, y al final te decimos qué libro podrías leer tú según tus gustos.
+        </p>
+        <div class="pt-8">
+            <a href="#dashboard" class="inline-flex items-center gap-2 bg-graphite text-paper px-8 py-4 rounded-full font-medium hover:bg-sage transition-all duration-300 transform hover:-translate-y-1 shadow-lg">
+                Explorar los Datos <i class="fa-solid fa-arrow-down animate-bounce"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- ── DASHBOARD ─────────────────────────────────────────────── -->
+<section id="dashboard" class="py-20 px-6 max-w-7xl mx-auto">
+    <div class="mb-12">
+        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">¿Qué nos dijeron los 32?</h2>
+        <p class="text-gray-600 max-w-3xl">Estos son los resultados de la encuesta. Puedes ver cuántas personas participaron, qué géneros dominan y cuál fue el libro favorito del grupo.</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div class="glass-card p-10 rounded-2xl text-center shadow-sm hover:shadow-md transition">
+            <i class="fa-solid fa-users text-3xl text-sage mb-4"></i>
+            <h3 class="text-gray-500 text-sm uppercase tracking-wider font-semibold mb-2">Mentes Lectoras</h3>
+            <p id="kpi-total" class="font-playfair text-5xl font-bold text-graphite">--</p>
+        </div>
+        <div class="glass-card p-10 rounded-2xl text-center shadow-sm hover:shadow-md transition">
+            <i class="fa-solid fa-book-open text-3xl text-sage mb-4"></i>
+            <h3 class="text-gray-500 text-sm uppercase tracking-wider font-semibold mb-2">Género Dominante</h3>
+            <p id="kpi-genre" class="font-playfair text-3xl mt-2 font-bold text-graphite truncate">--</p>
+        </div>
+        <div class="glass-card p-10 rounded-2xl text-center shadow-sm hover:shadow-md transition">
+            <i class="fa-solid fa-trophy text-3xl text-sage mb-4"></i>
+            <h3 class="text-gray-500 text-sm uppercase tracking-wider font-semibold mb-2">Libro #1</h3>
+            <p id="kpi-tone" class="font-playfair text-xl mt-2 font-bold text-graphite">--</p>
+        </div>
+    </div>
+
+    <!-- Top 5 visual -->
+    <div class="mb-16">
+        <h3 class="font-playfair text-2xl font-bold text-graphite mb-2">Los 5 libros más queridos del grupo</h3>
+        <p class="text-gray-500 text-sm mb-8">Los que recibieron las mejores calificaciones entre los 32 encuestados.*</p>
+        <div id="top5-cards" class="grid grid-cols-1 sm:grid-cols-5 gap-5"></div>
+        <p class="text-xs text-gray-400 mt-4">* La calificación mostrada es el <strong>promedio bayesiano</strong> | Pondera la calificación promedio por el número de votos recibidos, penalizando títulos con pocas reseñas y acercándolos al promedio global del grupo.</p>
+    </div>
+
+    <!-- Graficas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+        <!-- Columna izquierda: dos barras apiladas -->
+        <div class="flex flex-col gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-playfair text-2xl font-semibold mb-6">Distribución Temática</h3>
+                <div style="height:300px;position:relative;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Favoritos de los Encuestados</h3>
+                <p class="text-gray-500 text-sm mb-6">Respuestas directas de la encuesta - cada persona podía elegir varios.</p>
+                <div style="height:260px;position:relative;">
+                    <canvas id="favGenresChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: dona -->
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+            <h3 class="font-playfair text-2xl font-semibold mb-2">Géneros Literarios del Catálogo</h3>
+            <p class="text-xs text-gray-400 mb-4">Top 5 por votos: <strong class="text-graphite">Dystopian</strong> (94) · <strong class="text-graphite">Drama</strong> (54) · <strong class="text-graphite">Magical Realism</strong> (45) · <strong class="text-graphite">Mystery</strong> (44) · <strong class="text-graphite">Historical Drama</strong> (35)</p>
+            <div class="flex-1 flex items-center justify-center" style="min-height:540px;position:relative;">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── ARQUITECTURA ───────────────────────────────────────────── -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">¿Cómo funciona?</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">El proyecto tiene tres partes: primero preguntamos, luego organizamos los datos, y por último el sistema aprende de las respuestas para hacer sugerencias.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 z-0"></div>
+            <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">1</div>
+                <h3 class="font-playfair text-xl font-bold mb-3">La Encuesta</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Le pedimos a 32 personas que calificaran del 1 al 5 los libros que habían leído de nuestra lista de 30. Si no lo habían leído, simplemente lo dejaban en 0. También les preguntamos su edad, ocupación y qué géneros les gustan.</p>
+            </div>
+            <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">2</div>
+                <h3 class="font-playfair text-xl font-bold mb-3">La Lista de Libros</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Elegimos 30 libros conocidos de distintos géneros y épocas. A cada uno le anotamos su género, tema principal, país de origen y año de publicación para poder comparar mejor las preferencias del grupo.</p>
+            </div>
+            <div class="relative z-10 bg-paper p-10 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="w-12 h-12 bg-sage text-white rounded-full flex items-center justify-center font-bold text-xl mb-6 shadow-lg">3</div>
+                <h3 class="font-playfair text-xl font-bold mb-3">El Recomendador</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Con las calificaciones en mano, el sistema busca qué libros fueron valorados de forma parecida por las mismas personas. Si tú y otra persona calificaron igual varios libros, probablemente también te guste lo que a esa persona le encantó.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CORPUS ─────────────────────────────────────────────────── -->
+<section class="py-20 px-6 max-w-7xl mx-auto">
+    <div class="mb-12">
+        <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Los libros de la lista</h2>
+        <p class="text-gray-600 max-w-2xl">Estos son los 6 mejor calificados de los 30 que usamos en la encuesta. Abajo puedes ver todos.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <img src="https://covers.openlibrary.org/b/isbn/9780439023481-M.jpg" alt="The Hunger Games" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Dystopian · 2008</div>
+            <h3 class="font-playfair text-xl font-bold mb-1">The Hunger Games</h3>
+            <p class="text-gray-500 text-sm mb-4">Suzanne Collins</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Survival</span>
+                <span class="bg-paper px-2 py-1 rounded">#1 del ranking</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <img src="https://covers.openlibrary.org/b/isbn/9780439708180-M.jpg" alt="Harry Potter" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Fantasy · 1997</div>
+            <h3 class="font-playfair text-xl font-bold mb-1">Harry Potter</h3>
+            <p class="text-gray-500 text-sm mb-4">J.K. Rowling</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Friendship</span>
+                <span class="bg-paper px-2 py-1 rounded">#2 del ranking</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <img src="https://covers.openlibrary.org/b/isbn/9780743273565-M.jpg" alt="The Great Gatsby" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Drama · 1925</div>
+            <h3 class="font-playfair text-xl font-bold mb-1">The Great Gatsby</h3>
+            <p class="text-gray-500 text-sm mb-4">F. Scott Fitzgerald</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Wealth</span>
+                <span class="bg-paper px-2 py-1 rounded">#3 del ranking</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <img src="https://covers.openlibrary.org/b/isbn/9780060883287-M.jpg" alt="One Hundred Years of Solitude" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Magical Realism · 1967</div>
+            <h3 class="font-playfair text-lg font-bold mb-1">One Hundred Years of Solitude</h3>
+            <p class="text-gray-500 text-sm mb-4">Gabriel García Márquez</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Family</span>
+                <span class="bg-paper px-2 py-1 rounded">#4 del ranking</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hidden lg:block">
+            <img src="https://covers.openlibrary.org/b/isbn/9780385490818-M.jpg" alt="The Handmaid's Tale" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Dystopian · 1985</div>
+            <h3 class="font-playfair text-xl font-bold mb-1">The Handmaid's Tale</h3>
+            <p class="text-gray-500 text-sm mb-4">Margaret Atwood</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Oppression</span>
+                <span class="bg-paper px-2 py-1 rounded">#5 del ranking</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hidden lg:block">
+            <img src="https://covers.openlibrary.org/b/isbn/9780451524935-M.jpg" alt="1984" class="portada-img mb-4" onerror="this.style.display='none'">
+            <div class="text-xs font-semibold text-sage tracking-wider uppercase mb-2">Dystopian · 1949</div>
+            <h3 class="font-playfair text-xl font-bold mb-1">1984</h3>
+            <p class="text-gray-500 text-sm mb-4">George Orwell</p>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                <span class="bg-paper px-2 py-1 rounded">Surveillance</span>
+                <span class="bg-paper px-2 py-1 rounded">#6 del ranking</span>
+            </div>
+        </div>
+
+        <!-- 24 más — abre modal -->
+        <div id="btn-ver-todos" class="bg-paper p-6 rounded-xl border border-dashed border-gray-300 shadow-sm flex items-center justify-center text-center hidden lg:flex flex-col gap-2 cursor-pointer hover:border-sage hover:bg-sageLight transition-all duration-200">
+            <i class="fa-solid fa-plus text-gray-400 text-2xl"></i>
+            <p class="text-gray-500 font-medium text-sm">24 títulos más<br>en la base de datos</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── MODAL 24 LIBROS ────────────────────────────────────────── -->
+<div id="modal-libros" role="dialog" aria-modal="true" aria-label="Catálogo completo">
+    <div id="modal-contenido">
+        <button id="modal-cerrar" class="absolute top-4 right-5 text-gray-400 hover:text-graphite text-2xl">&times;</button>
+        <h3 class="font-playfair text-2xl font-bold text-graphite mb-6">Catálogo completo - 30 títulos</h3>
+        <div id="modal-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </div>
+</div>
+
+<!-- ── CASOS DE RECOMENDACION ─────────────────────────────────── -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="mb-12">
+            <h2 class="font-playfair text-4xl font-bold text-graphite mb-4">Ejemplos reales del sistema</h2>
+            <p class="text-gray-600 max-w-2xl">Dos personas reales de nuestra encuesta, y el libro que el sistema les recomendó basándose en lo que calificaron alto.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+            <div class="bg-paper rounded-2xl p-10 border border-gray-100 flex flex-col sm:flex-row gap-8 items-start">
+                <div class="flex-1">
+                    <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 18</div>
+                    <h4 class="font-playfair text-2xl font-bold text-graphite mb-4">Estudiante, 19 años</h4>
+                    <ul class="text-sm text-gray-600 space-y-3">
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Género favorito: <strong>Fantasía / Misterio</strong></li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Calificó alto: <strong>Harry Potter</strong> (5★) y <strong>One Hundred Years</strong> (5★)</li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Tema predominante: <strong>Friendship / Family</strong></li>
+                    </ul>
+                </div>
+                <div class="hidden sm:block text-gray-300 pt-12"><i class="fa-solid fa-arrow-right-arrow-left text-3xl"></i></div>
+                <div class="flex-1 bg-white p-6 rounded-xl shadow-md text-center border-t-4 border-sage w-full">
+                    <img src="https://covers.openlibrary.org/b/isbn/9780375842207-M.jpg" alt="The Book Thief" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Recomendación Top</p>
+                    <h5 class="font-playfair font-bold text-xl">The Book Thief</h5>
+                    <p class="text-xs text-gray-400 mt-2">Otras personas con gustos similares también calificaron alto este libro, así que el sistema lo sugirió como siguiente lectura.</p>
+                </div>
+            </div>
+
+            <div class="bg-paper rounded-2xl p-10 border border-gray-100 flex flex-col sm:flex-row gap-8 items-start">
+                <div class="flex-1">
+                    <div class="inline-block bg-gray-200 text-gray-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">Perfil Real · Encuestado 15</div>
+                    <h4 class="font-playfair text-2xl font-bold text-graphite mb-4">Freelancer, 24 años</h4>
+                    <ul class="text-sm text-gray-600 space-y-3">
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Género favorito: <strong>Misterio / Novela Histórica / Clásicos</strong></li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Calificó alto: <strong>One Hundred Years of Solitude</strong> (5★) y <strong>1984</strong> (4★)</li>
+                        <li><i class="fa-solid fa-check text-sage mr-2"></i>Tema predominante: <strong>Family / Surveillance</strong></li>
+                    </ul>
+                </div>
+                <div class="hidden sm:block text-gray-300 pt-12"><i class="fa-solid fa-arrow-right-arrow-left text-3xl"></i></div>
+                <div class="flex-1 bg-white p-6 rounded-xl shadow-md text-center border-t-4 border-sage w-full">
+                    <img src="https://covers.openlibrary.org/b/isbn/9781501117015-M.jpg" alt="The House of the Spirits" class="w-20 mx-auto rounded mb-3" onerror="this.style.display='none'">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Recomendación Top</p>
+                    <h5 class="font-playfair font-bold text-xl">The House of the Spirits</h5>
+                    <p class="text-xs text-gray-400 mt-2">Quienes calificaron alto los mismos libros que esta persona también disfrutaron mucho este título.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── RECOMENDADOR INTERACTIVO ───────────────────────────────── -->
+<section class="py-24 bg-sage relative overflow-hidden" id="recomendador">
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#ffffff 2px, transparent 2px); background-size: 30px 30px;"></div>
+    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-white">
+        <i class="fa-solid fa-book-journal-whills text-5xl mb-6 opacity-80"></i>
+        <h2 class="font-playfair text-4xl md:text-5xl font-bold mb-4">¿Cuál es tu próxima lectura?</h2>
+        <p class="text-lg font-light opacity-90 mb-10 max-w-xl mx-auto">Elige lo que más te gusta y te decimos qué libro de nuestra lista podría ser el tuyo.</p>
+
+        <div class="bg-white text-graphite rounded-2xl p-8 md:p-10 text-left shadow-xl">
+
+            <!-- Pregunta 1 -->
+            <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué género te atrae más?</p>
+            <div id="q1" class="flex flex-wrap gap-2 mb-8">
+                <button class="opcion-btn" data-q="1" data-v="Dystopian">Distopía</button>
+                <button class="opcion-btn" data-q="1" data-v="Fantasy">Fantasía</button>
+                <button class="opcion-btn" data-q="1" data-v="Mystery">Misterio</button>
+                <button class="opcion-btn" data-q="1" data-v="Romance">Romance</button>
+                <button class="opcion-btn" data-q="1" data-v="Drama">Drama</button>
+                <button class="opcion-btn" data-q="1" data-v="Memoir">Memorias</button>
+                <button class="opcion-btn" data-q="1" data-v="Psychology">Psicología</button>
+                <button class="opcion-btn" data-q="1" data-v="Thriller">Thriller</button>
+                <button class="opcion-btn" data-q="1" data-v="Adventure">Aventura</button>
+            </div>
+
+            <!-- Pregunta 2 -->
+            <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué tema te interesa explorar?</p>
+            <div id="q2" class="flex flex-wrap gap-2 mb-8">
+                <button class="opcion-btn" data-q="2" data-v="Survival">Supervivencia</button>
+                <button class="opcion-btn" data-q="2" data-v="Family">Familia</button>
+                <button class="opcion-btn" data-q="2" data-v="Identity">Identidad</button>
+                <button class="opcion-btn" data-q="2" data-v="Love">Amor</button>
+                <button class="opcion-btn" data-q="2" data-v="Justice">Justicia</button>
+                <button class="opcion-btn" data-q="2" data-v="Friendship">Amistad</button>
+                <button class="opcion-btn" data-q="2" data-v="Oppression">Poder y control</button>
+                <button class="opcion-btn" data-q="2" data-v="Resilience">Resiliencia</button>
+            </div>
+
+            <!-- Pregunta 3 -->
+            <p class="font-semibold text-sm uppercase tracking-wider text-gray-400 mb-3">¿Qué época prefieres?</p>
+            <div id="q3" class="flex flex-wrap gap-2 mb-10">
+                <button class="opcion-btn" data-q="3" data-v="clasico">Clásico (antes de 1980)</button>
+                <button class="opcion-btn" data-q="3" data-v="moderno">Moderno (1980–2009)</button>
+                <button class="opcion-btn" data-q="3" data-v="reciente">Reciente (2010 en adelante)</button>
+                <button class="opcion-btn" data-q="3" data-v="cualquiera">Me es indiferente</button>
+            </div>
+
+            <button id="btn-recomendar" class="w-full bg-graphite text-white py-4 rounded-xl font-semibold text-base hover:bg-sage transition-all duration-300">
+                Recomiéndame un libro
+            </button>
+
+            <!-- Resultado -->
+            <div id="resultado-rec" class="hidden mt-8 border-t border-gray-100 pt-8">
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-4 text-center">Tu recomendación</p>
+                <div class="flex flex-col sm:flex-row gap-6 items-center">
+                    <img id="rec-portada" src="" alt="" class="w-32 rounded-lg shadow-lg flex-shrink-0 mx-auto sm:mx-0" style="min-height:12rem;background:#e5e7eb;">
+                    <div>
+                        <h4 id="rec-titulo" class="font-playfair text-2xl font-bold text-graphite mb-1"></h4>
+                        <p id="rec-autor" class="text-gray-500 text-sm mb-3"></p>
+                        <p id="rec-razon" class="text-gray-600 text-sm leading-relaxed"></p>
+                        <button id="btn-reiniciar" class="mt-4 text-sage text-sm font-medium hover:underline">← Intentar de nuevo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── NOTAS TECNICAS ─────────────────────────────────────────── -->
+<section class="py-20 px-6 max-w-4xl mx-auto border-t border-gray-200">
+    <div class="mb-8 text-center">
+        <h2 class="text-sm font-bold text-gray-400 tracking-widest uppercase mb-2">Para los curiosos</h2>
+        <h3 class="font-playfair text-3xl font-bold text-graphite">Qué limitaciones tiene el sistema</h3>
+    </div>
+    <details class="bg-white rounded-xl border border-gray-200 shadow-sm mb-4 group cursor-pointer overflow-hidden">
+        <summary class="p-6 font-semibold flex justify-between items-center text-graphite hover:bg-gray-50 transition">
+            <span><i class="fa-solid fa-scale-balanced text-sage mr-3"></i> Lo que el sistema no puede hacer bien</span>
+            <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-6 pt-0 text-sm text-gray-600 border-t border-gray-100 bg-gray-50 leading-relaxed">
+            <p class="mb-3">Todo sistema de recomendación tiene límites. Estos son los más importantes que encontramos:</p>
+            <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Pocos datos:</strong> La mayoría de los 32 encuestados no habían leído todos los libros, así que hay muchos huecos. Con tan poca información, las recomendaciones pueden ser menos precisas.</li>
+                <li><strong>Lista sesgada:</strong> Los 30 libros son principalmente clásicos y bestsellers en inglés. Falta representación de otras culturas y tradiciones literarias.</li>
+                <li><strong>Muestra pequeña:</strong> Con solo 32 personas, una sola opinión muy distinta al resto puede cambiar bastante los resultados del sistema.</li>
+            </ul>
+        </div>
+    </details>
+    <details class="bg-white rounded-xl border border-gray-200 shadow-sm group cursor-pointer overflow-hidden">
+        <summary class="p-6 font-semibold flex justify-between items-center text-graphite hover:bg-gray-50 transition">
+            <span><i class="fa-solid fa-code text-sage mr-3"></i> El código detrás del recomendador</span>
+            <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-0 border-t border-gray-100 bg-gray-900 overflow-x-auto text-xs sm:text-sm">
+<pre><code class="language-python text-gray-300 block p-6"># promedio bayesiano por libro
+C = ratings.groupby("libro_id")["calificacion"].count().mean()
+m = ratings.groupby("libro_id")["calificacion"].mean().mean()
+
+def bayesian_avg(x):
+    return (C * m + x.sum()) / (C + x.count())
+
+# similitud coseno entre libros (item-item)
+from scipy.sparse import csr_matrix
+from sklearn.neighbors import NearestNeighbors
+
+X = csr_matrix((ratings["calificacion"], (libro_index, user_index)))
+kNN = NearestNeighbors(n_neighbors=6, algorithm="brute", metric="cosine")
+kNN.fit(X)
+distances, indices = kNN.kneighbors(libro_vec, return_distance=True)
+</code></pre>
+        </div>
+    </details>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer class="bg-graphite text-gray-400 py-12 px-6 text-sm border-t-4 border-sage mt-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+            <h4 class="text-white font-playfair font-bold text-lg mb-4">Marco Institucional</h4>
+            <p>Instituto Tecnológico y de Estudios Superiores de Monterrey<br>Campus Monterrey.</p>
+            <p class="mt-2 text-xs">Ciencia de datos y análisis cultural: cine, literatura y música (Gpo 570).</p>
+        </div>
+        <div>
+            <h4 class="text-white font-playfair font-bold text-lg mb-4">Dirección Académica</h4>
+            <p>Prof. Mauro Herrera Machuca</p>
+            <p>Prof. Maria del Carmen Fernández Chapou</p>
+            <p class="mt-4 text-xs">Fecha de publicación: 12 de Mayo del 2026</p>
+        </div>
+        <div>
+            <h4 class="text-white font-playfair font-bold text-lg mb-4">Desarrollo y Análisis</h4>
+            <ul class="space-y-1 text-xs">
+                <li>Gregor Juan Pablo Tamez Lopez</li>
+                <li>Marco Antonio Vargas Ayala</li>
+                <li>Yojan Adir Garcia Benítez</li>
+                <li>Adrian Castillo Ruiz</li>
+                <li>Cesar Gael Higareda Rangel</li>
+                <li>Gerardo Raúl Vega Vázquez</li>
+            </ul>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-12 pt-6 border-t border-gray-700 text-center text-xs opacity-60">
+        <p>&copy; 2026 Proyecto Académico. Fines exclusivos de divulgación e investigación.</p>
+    </div>
+</footer>
+
+<!-- ── SCRIPT ─────────────────────────────────────────────────── -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ── DATOS ───────────────────────────────────────────────────
+    const catalogo = [
+        { rank:1,  titulo:"The Hunger Games",                          autor:"Suzanne Collins",         genero:"Dystopian",             tema:"Survival",     anio:2008, isbn:"9780439023481",  bayesian:2.498 },
+        { rank:2,  titulo:"Harry Potter and the Philosopher's Stone",  autor:"J.K. Rowling",            genero:"Fantasy",               tema:"Friendship",   anio:1997, isbn:"9780439708180",  bayesian:2.453 },
+        { rank:3,  titulo:"The Great Gatsby",                          autor:"F. Scott Fitzgerald",     genero:"Drama",                 tema:"Wealth",       anio:1925, isbn:"9780743273565",  bayesian:2.363 },
+        { rank:4,  titulo:"One Hundred Years of Solitude",             autor:"Gabriel García Márquez",  genero:"Magical Realism",       tema:"Family",       anio:1967, isbn:"9780060883287",  bayesian:2.318 },
+        { rank:5,  titulo:"The Handmaid's Tale",                       autor:"Margaret Atwood",         genero:"Dystopian",             tema:"Oppression",   anio:1985, isbn:"9780385490818",  bayesian:2.135 },
+        { rank:6,  titulo:"1984",                                      autor:"George Orwell",           genero:"Dystopian",             tema:"Surveillance", anio:1949, isbn:"9780451524935",  bayesian:2.092 },
+        { rank:7,  titulo:"The Book Thief",                            autor:"Markus Zusak",            genero:"Historical Fiction",    tema:"Survival",     anio:2005, isbn:"9780375842207",  bayesian:2.006 },
+        { rank:8,  titulo:"Never Let Me Go",                           autor:"Kazuo Ishiguro",          genero:"Science Fiction",       tema:"Mortality",    anio:2005, isbn:"9781400078776",  bayesian:2.006 },
+        { rank:9,  titulo:"The Power of Habit",                        autor:"Charles Duhigg",          genero:"Psychology",            tema:"Behavior",     anio:2012, isbn:"9780812981605",  bayesian:2.006 },
+        { rank:10, titulo:"Becoming",                                  autor:"Michelle Obama",          genero:"Memoir",                tema:"Identity",     anio:2018, isbn:"9781524763138",  bayesian:2.005 },
+        { rank:11, titulo:"A Thousand Splendid Suns",                  autor:"Khaled Hosseini",         genero:"Historical Drama",      tema:"Resilience",   anio:2007, isbn:"9781594489501",  bayesian:1.979 },
+        { rank:12, titulo:"Life of Pi",                                autor:"Yann Martel",             genero:"Adventure",             tema:"Survival",     anio:2001, isbn:"9780156027328",  bayesian:1.979 },
+        { rank:13, titulo:"The Alchemist",                             autor:"Paulo Coelho",            genero:"Fable",                 tema:"Destiny",      anio:1988, isbn:"9780062315007",  bayesian:1.919 },
+        { rank:14, titulo:"Norwegian Wood",                            autor:"Haruki Murakami",         genero:"Romance",               tema:"Love",         anio:1987, isbn:"9780375704024",  bayesian:1.914 },
+        { rank:15, titulo:"Educated",                                  autor:"Tara Westover",           genero:"Memoir",                tema:"Education",    anio:2018, isbn:"9780399590504",  bayesian:1.911 },
+        { rank:16, titulo:"Thinking, Fast and Slow",                   autor:"Daniel Kahneman",         genero:"Psychology",            tema:"Cognition",    anio:2011, isbn:"9780374533557",  bayesian:1.911 },
+        { rank:17, titulo:"The Kite Runner",                           autor:"Khaled Hosseini",         genero:"Drama",                 tema:"Guilt",        anio:2003, isbn:"9781594631931",  bayesian:1.905 },
+        { rank:18, titulo:"The Da Vinci Code",                         autor:"Dan Brown",               genero:"Thriller",              tema:"Religion",     anio:2003, isbn:"9780307474278",  bayesian:1.899 },
+        { rank:19, titulo:"Little Fires Everywhere",                   autor:"Celeste Ng",              genero:"Drama",                 tema:"Identity",     anio:2017, isbn:"9780735224292",  bayesian:1.883 },
+        { rank:20, titulo:"The Shadow of the Wind",                    autor:"Carlos Ruiz Zafón",       genero:"Mystery",               tema:"Books",        anio:2001, isbn:"9780143034902",  bayesian:1.876 },
+        { rank:21, titulo:"The Silent Patient",                        autor:"Alex Michaelides",        genero:"Psychological Thriller",tema:"Obsession",    anio:2019, isbn:"9781250301697",  bayesian:1.857 },
+        { rank:22, titulo:"Beloved",                                   autor:"Toni Morrison",           genero:"Historical Drama",      tema:"Memory",       anio:1987, isbn:"9781400033416",  bayesian:1.853 },
+        { rank:23, titulo:"The Fault in Our Stars",                    autor:"John Green",              genero:"Romance",               tema:"Loss",         anio:2012, isbn:"9780525478812",  bayesian:1.853 },
+        { rank:24, titulo:"To Kill a Mockingbird",                     autor:"Harper Lee",              genero:"Legal Drama",           tema:"Justice",      anio:1960, isbn:"9780061935466",  bayesian:1.837 },
+        { rank:25, titulo:"Where the Crawdads Sing",                   autor:"Delia Owens",             genero:"Mystery",               tema:"Nature",       anio:2018, isbn:"9780735224292",  bayesian:1.822 },
+        { rank:26, titulo:"The Road",                                  autor:"Cormac McCarthy",         genero:"Dystopian",             tema:"Survival",     anio:2006, isbn:"9780307387899",  bayesian:1.804 },
+        { rank:27, titulo:"Brave New World",                           autor:"Aldous Huxley",           genero:"Dystopian",             tema:"Control",      anio:1932, isbn:"9780060850524",  bayesian:1.787 },
+        { rank:28, titulo:"Gone Girl",                                 autor:"Gillian Flynn",           genero:"Mystery",               tema:"Deception",    anio:2012, isbn:"9780307588364",  bayesian:1.738 },
+        { rank:29, titulo:"The House of the Spirits",                  autor:"Isabel Allende",          genero:"Magical Realism",       tema:"Family",       anio:1982, isbn:"9781501117015",  bayesian:1.725 },
+        { rank:30, titulo:"The Four Agreements",                       autor:"Don Miguel Ruiz",         genero:"Self-Help",             tema:"Wisdom",       anio:1997, isbn:"9781878424310",  bayesian:1.717 },
+    ];
+
+    function coverUrl(isbn) {
+        return `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`;
+    }
+
+    // ── KPIs ────────────────────────────────────────────────────
+    document.getElementById('kpi-total').textContent = '32';
+    document.getElementById('kpi-genre').textContent = 'Dystopian';
+    document.getElementById('kpi-tone').textContent = 'The Hunger Games';
+
+    // ── TOP 5 CARDS ─────────────────────────────────────────────
+    const top5Container = document.getElementById('top5-cards');
+    const medallas = ['🥇','🥈','🥉','4°','5°'];
+    catalogo.slice(0,5).forEach((libro, i) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col items-center text-center';
+        card.innerHTML = `
+            <div class="text-2xl mb-2">${medallas[i]}</div>
+            <img src="${coverUrl(libro.isbn)}" alt="${libro.titulo}"
+                 class="w-20 rounded shadow mb-3" onerror="this.style.display='none'">
+            <p class="text-xs font-bold text-sage uppercase tracking-wider mb-1">${libro.genero}</p>
+            <h4 class="font-playfair font-bold text-sm text-graphite leading-snug mb-1">${libro.titulo}</h4>
+            <p class="text-gray-400 text-xs mb-2">${libro.autor}</p>
+            <span class="bg-sageLight text-sage text-xs font-bold px-2 py-1 rounded-full">${libro.bayesian.toFixed(2)} ★</span>
+        `;
+        top5Container.appendChild(card);
+    });
+
+    // ── MODAL 24 LIBROS ─────────────────────────────────────────
+    const modalGrid = document.getElementById('modal-grid');
+    catalogo.forEach(libro => {
+        const item = document.createElement('div');
+        item.className = 'flex flex-col items-center text-center gap-1';
+        item.innerHTML = `
+            <img src="${coverUrl(libro.isbn)}" alt="${libro.titulo}"
+                 class="w-full rounded shadow" style="aspect-ratio:2/3;object-fit:cover" onerror="this.style.background='#e5e7eb'">
+            <p class="text-xs font-semibold text-graphite leading-tight mt-1">${libro.titulo}</p>
+            <p class="text-xs text-gray-400">${libro.autor}</p>
+            <span class="text-xs text-sage font-bold">#${libro.rank}</span>
+        `;
+        modalGrid.appendChild(item);
+    });
+
+    document.getElementById('btn-ver-todos').addEventListener('click', () => {
+        document.getElementById('modal-libros').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    });
+    document.getElementById('modal-cerrar').addEventListener('click', cerrarModal);
+    document.getElementById('modal-libros').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('modal-libros')) cerrarModal();
+    });
+    function cerrarModal() {
+        document.getElementById('modal-libros').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // ── GRAFICAS ────────────────────────────────────────────────
+    const votosGenero = {}, votosTema = {};
+    catalogo.forEach(l => {
+        // usamos bayesian como proxy de votos relativos para la dona
+        votosGenero[l.genero] = (votosGenero[l.genero] || 0) + 1;
+        votosTema[l.tema]     = (votosTema[l.tema]     || 0) + 1;
+    });
+
+    // intentar cargar datos.csv para votos reales
+    Papa.parse("datos.csv", {
+        download: true, header: true, skipEmptyLines: true,
+        complete: (res) => { if (res.data.length) renderCharts(res.data); else renderCharts(null); },
+        error: () => renderCharts(null)
+    });
+
+    function renderCharts(csvData) {
+        const gVotos = {}, tVotos = {};
+        if (csvData) {
+            csvData.forEach(r => {
+                const g = r.genero; const t = r.tema; const v = Number(r.votos)||1;
+                if(g) gVotos[g] = (gVotos[g]||0)+v;
+                if(t) tVotos[t] = (tVotos[t]||0)+v;
+            });
+        } else {
+            // fallback: votos reales hardcodeados
+            Object.assign(gVotos, { Dystopian:94, Drama:54, "Magical Realism":45, Mystery:44, "Historical Drama":35, Memoir:33, Romance:30, Psychology:30, Fantasy:27, Adventure:20, Thriller:20, "Legal Drama":18, Fable:17, "Self-Help":17, "Psychological Thriller":16, "Science Fiction":15, "Historical Fiction":13 });
+            Object.assign(tVotos, { Survival:70, Family:45, Identity:34, Friendship:27, Wealth:27, Oppression:21, Religion:20, Resilience:20, Control:19, Justice:18 });
+        }
+
+        // Barras — top 10 temas
+        const temas = Object.entries(tVotos).sort((a,b)=>b[1]-a[1]).slice(0,10);
+        new Chart(document.getElementById('barChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: temas.map(e=>e[0]),
+                datasets: [{ label:'Votos', data: temas.map(e=>e[1]), backgroundColor:'#059669', borderRadius:4 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display:false } },
+                scales: {
+                    y: { beginAtZero:true, grid:{ color:'#f3f4f6' } },
+                    x: { grid:{ display:false }, ticks:{ font:{ size:11 } } }
+                }
+            }
+        });
+
+        // Dona — géneros
+        const generos = Object.entries(gVotos).sort((a,b)=>b[1]-a[1]);
+        const paleta = ['#059669','#1F2937','#34d399','#9ca3af','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#ec4899','#6ee7b7','#a78bfa','#fbbf24','#60a5fa','#f87171','#fb7185','#a3e635','#38bdf8'];
+        new Chart(document.getElementById('doughnutChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: generos.map(e=>e[0]),
+                datasets: [{ data: generos.map(e=>e[1]), backgroundColor: paleta, borderWidth:0, hoverOffset:6 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { top: 10, bottom: 10 } },
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { font:{ size:11 }, boxWidth:14, padding:10 }
+                    }
+                },
+                cutout: '55%'
+            }
+        });
+
+        // Géneros favoritos de los encuestados (datos directos de la encuesta)
+        const favGenres = [
+            { label: 'Misterio/Thriller', value: 19 },
+            { label: 'Romance',           value: 16 },
+            { label: 'Fantasía',          value: 12 },
+            { label: 'Ciencia Ficción',   value: 9  },
+            { label: 'Novela Histórica',  value: 9  },
+            { label: 'Ficción General',   value: 6  },
+            { label: 'Otro',              value: 6  },
+            { label: 'Biografía/Auto.',   value: 5  },
+            { label: 'Terror',            value: 4  },
+            { label: 'No Ficción',        value: 3  },
+            { label: 'Clásicos',          value: 2  },
+            { label: 'Poesía',            value: 2  },
+        ];
+        new Chart(document.getElementById('favGenresChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: favGenres.map(e => e.label),
+                datasets: [{
+                    label: 'Menciones',
+                    data: favGenres.map(e => e.value),
+                    backgroundColor: favGenres.map((_, i) =>
+                        i === 0 ? '#059669' : i === 1 ? '#34d399' : i === 2 ? '#6ee7b7' : '#9ca3af'
+                    ),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { stepSize: 4 } },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    // ── RECOMENDADOR ────────────────────────────────────────────
+    const seleccion = { 1: null, 2: null, 3: null };
+
+    document.querySelectorAll('.opcion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const q = btn.dataset.q;
+            document.querySelectorAll(`.opcion-btn[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            seleccion[q] = btn.dataset.v;
+        });
+    });
+
+    let _recomendando = false;
+    document.getElementById('btn-recomendar').addEventListener('click', () => {
+        if (!seleccion[1] && !seleccion[2] && !seleccion[3]) {
+            alert('Elige al menos una opción para continuar.');
+            return;
+        }
+        if (_recomendando) return;
+        _recomendando = true;
+
+        const btn = document.getElementById('btn-recomendar');
+        const resultadoEl = document.getElementById('resultado-rec');
+
+        // 1. Ocultar resultado y deshabilitar botón de inmediato
+        resultadoEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Buscando…';
+
+        // 2. Calcular el mejor libro (síncrono)
+        const scored = catalogo.map(libro => {
+            let score = 0;
+            if (seleccion[1] && libro.genero === seleccion[1]) score += 3;
+            if (seleccion[2] && libro.tema  === seleccion[2]) score += 2;
+            if (seleccion[3]) {
+                const yr = libro.anio;
+                if (seleccion[3] === 'clasico'    && yr < 1980)  score += 1;
+                if (seleccion[3] === 'moderno'    && yr >= 1980 && yr < 2010) score += 1;
+                if (seleccion[3] === 'reciente'   && yr >= 2010) score += 1;
+                if (seleccion[3] === 'cualquiera') score += 0.5;
+            }
+            return { ...libro, score: score + libro.bayesian * 0.1 };
+        });
+        const mejor = scored.sort((a,b) => b.score - a.score)[0];
+
+        // 3. Approach B: reemplazar el <img> por un clon limpio para cortar
+        //    cualquier carga o handler residual de la imagen anterior
+        const oldImg = document.getElementById('rec-portada');
+        const newImg = document.createElement('img');
+        newImg.id          = 'rec-portada';
+        newImg.alt         = mejor.titulo;
+        newImg.className   = oldImg.className;
+        newImg.style.cssText = 'min-height:12rem;background:#e5e7eb;display:block;';
+        oldImg.replaceWith(newImg);
+
+        // 4. Rellenar textos (no dependen de la imagen)
+        document.getElementById('rec-titulo').textContent = mejor.titulo;
+        document.getElementById('rec-autor').textContent  = mejor.autor;
+        document.getElementById('rec-razon').textContent  =
+            `Género: ${mejor.genero} · Tema: ${mejor.tema} · ${mejor.anio}. ` +
+            `Calificación bayesiana del grupo: ${mejor.bayesian.toFixed(2)}/5.`;
+
+        // 5. Mostrar resultado INMEDIATAMENTE, sin esperar la imagen
+        resultadoEl.classList.remove('hidden');
+        resultadoEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+        btn.disabled = false;
+        btn.textContent = 'Recomiéndame un libro';
+        _recomendando = false;
+
+        // 6. Cargar la imagen en segundo plano con setTimeout como safety net:
+        //    si tarda más de 4 s la descartamos silenciosamente
+        const imgTimeout = setTimeout(() => {
+            newImg.removeAttribute('src');
+        }, 4000);
+
+        newImg.onload  = () => clearTimeout(imgTimeout);
+        newImg.onerror = () => {
+            clearTimeout(imgTimeout);
+            newImg.removeAttribute('src');
+        };
+        newImg.src = coverUrl(mejor.isbn);
+    });
+
+    document.getElementById('btn-reiniciar').addEventListener('click', () => {
+        seleccion[1] = seleccion[2] = seleccion[3] = null;
+        document.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('resultado-rec').classList.add('hidden');
+    });
+
+});
+</script>
+</body>
+</html>
